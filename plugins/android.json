@@ -7,9 +7,6 @@
     "files": {}
   },
   "installed_plugins": {
-    "cordova-plugin-statusbar": {
-      "PACKAGE_NAME": "io.rhstaffing.app"
-    },
     "cordova-plugin-device": {
       "PACKAGE_NAME": "io.rhstaffing.app"
     },
