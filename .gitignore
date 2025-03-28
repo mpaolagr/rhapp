@@ -1,11 +1,6 @@
-# Node modules
 node_modules/
-
-# Builds
+.angular/
 platforms/
 plugins/
 www/
 dist/
-
-# Environment files
-.env
