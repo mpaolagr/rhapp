@@ -25,6 +25,7 @@
     "@awesome-cordova-plugins/firebase": "^5.43.0",
     "@awesome-cordova-plugins/in-app-browser": "^5.43.0",
     "@awesome-cordova-plugins/onesignal": "^5.43.0",
+    "@babel/runtime": "^7.27.0",
     "@emailjs/browser": "^3.9.1",
     "@ionic-native/core": "^5.36.0",
     "@ionic-native/geolocation": "^5.36.0",
