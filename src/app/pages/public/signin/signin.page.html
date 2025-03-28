@@ -1,0 +1,82 @@
+<ion-header>
+  <ion-toolbar class="ion-no-border">
+
+    <ion-buttons slot="start">
+      <ion-button [disabled]="lang=='en'" color="primary" (click)="changeLang('en')">
+        <img class="custom-lang-flag" src="assets/lang-en.png">
+      </ion-button>
+      <!-- <ion-icon slot="icon-only" color="tertiary" name="code-outline"></ion-icon> -->
+      <i class="icon ion-md-code"></i>
+      <ion-button [disabled]="lang=='es'" color="primary" (click)="changeLang('es')">
+        <img class="custom-lang-flag" src="assets/lang-es.png">
+      </ion-button>
+    </ion-buttons>
+
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <!-- <div *ngIf="verifying">
+    <ion-spinner name="dots"></ion-spinner>
+  </div> -->
+
+  <!-- <ion-item>
+    <ion-select  (ionChange)="changeLang($event)" value="en" placeholder="{{'Language' | translate}}">
+      <ion-select-option value="en">{{'LanguageEN' | translate}}</ion-select-option>
+      <ion-select-option value="es">{{'LanguageES' | translate}}</ion-select-option>
+    </ion-select>
+  </ion-item> -->
+
+  <div class="ion-padding ion-full-height ion-flex ion-flex-center">
+
+    <div class="logo-container">
+      <!-- <h1 class="logo-placeholder">{{'AppName' | translate}}</h1> -->
+      <img class="custom-horizontal" src="assets/logo-horizontal.png">
+      <p>{{'SignIn-LetsLogin' | translate}}</p>
+    </div>
+
+    <form class="form-default" [formGroup]="signin_form" (submit)="signIn(!showApproved)" *ngIf="!showStillPending">
+
+      <ion-list class="item-card-list" lines="none">
+        <ion-item *ngIf="!showApproved">
+          <ion-label color="tertiary" position="stacked">{{'SignIn-Email' | translate}}</ion-label>
+          <ion-input formControlName="email" type="email" autocomplete="off" [(ngModel)]="username"
+            placeholder="{{'SignIn-EmailHint' | translate}}"></ion-input>
+        </ion-item>
+
+        <ion-item class="ion-margin-top-small" *ngIf="showApproved">
+          <ion-label color="tertiary" position="stacked">{{'SignIn-Password' | translate}}</ion-label>
+          <ion-input formControlName="password" type="password" [(ngModel)]="password" placeholder="{{'SignIn-PassHint' | translate}}"></ion-input>
+        </ion-item>
+      </ion-list>
+
+      <ion-button class="ion-margin-top" type="submit" expand="block" color="primary">
+        {{'SignIn-GoSignIn' | translate}}
+      </ion-button>
+
+      <ion-button color="warning" expand="outline" class="ion-button-small ion-margin-top-medium" routerLink="/register" style="width:100%">
+        {{'SignIn-GoToSignUp' | translate}}
+      </ion-button>
+
+      <ion-button color="primary" fill="clear" expand="block" class="ion-button-small ion-margin-top-medium" routerLink="/password-reset">
+        {{'SignIn-ForgotPass' | translate}}
+      </ion-button>
+    </form>
+
+    <div *ngIf="showStillPending">
+      {{'SignIn-PendingStatus' | translate}}
+    </div>
+    <ion-button color="primary" fill="clear" expand="block" class="ion-button-small ion-margin-top-medium" (click)="reset()" *ngIf="showStillPending || showApproved">
+      {{'SignIn-BackToSignIn' | translate}}
+    </ion-button>
+
+    <div class="ion-text-center ion-margin-top"></div>
+    <div class="ion-text-center ion-margin-top">
+      <ion-text color="medium">
+        <small>&copy; {{current_year}} {{'AppName' | translate}}</small>
+      </ion-text>
+    </div>
+
+  </div>
+
+</ion-content>

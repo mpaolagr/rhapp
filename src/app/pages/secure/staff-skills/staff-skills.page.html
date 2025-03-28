@@ -1,0 +1,90 @@
+<ion-header padding>
+  <ion-toolbar>
+    <ion-title size="large" class="custom-tab-title">
+      <!-- <ion-icon name="chevron-forward-outline" color="primary"></ion-icon> -->
+      <i color="primary" class="icon ion-md-heart"></i>
+      {{'StaffSkills-Header' | translate}}
+    </ion-title>
+
+    <ion-buttons slot="end">
+      <ion-button [disabled]="lang=='en'" color="primary" (click)="changeLang('en')">
+        <img class="custom-lang-flag" src="assets/lang-en.png">
+      </ion-button>
+      <!-- <ion-icon slot="icon-only" color="tertiary" name="code-outline"></ion-icon> -->
+      <i slot="icon-only" color="tertiary" class="icon ion-md-code"></i>
+      <ion-button [disabled]="lang=='es'" color="primary" (click)="changeLang('es')">
+        <img class="custom-lang-flag" src="assets/lang-es.png">
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="backgroundimage">
+
+  <div *ngIf="mySkills && mySkills.length > 0">
+  <ion-header>
+    <ion-toolbar>
+      <ion-title size="small">
+        <i color="success" class="icon ion-md-shield-checkmark"></i>
+        {{'StaffSkills-ApprovedSkillsTitle' | translate}}
+      </ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-list>
+      <ion-item *ngFor="let item of mySkills">
+        <ion-checkbox checked="true" color="success" disabled>
+        </ion-checkbox>
+        {{ item.rhParameter.valueEn }}
+      </ion-item>
+  </ion-list>
+  </div>
+
+  <div *ngIf="allSkills && allSkills.length > 0">
+  <ion-header>
+    <ion-toolbar>
+      <ion-title size="small">
+        <i color="danger" class="icon ion-md-add"></i>
+        {{'StaffSkills-AddNewSkillTitle' | translate}}
+      </ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <div class="logo-container">
+    <p>{{'StaffSkills-AddNewSkillHint' | translate}}</p>
+  </div>
+  <ion-list>
+    <ion-radio-group [(ngModel)]="skillToAdd" multiple="false">
+      <ion-list-header>
+        <ion-label class="marginleft">Select a position and upload a certificate</ion-label>
+      </ion-list-header>
+
+      <ion-item *ngFor="let item of allSkills">
+        <ion-label>{{ item.valueEn }}</ion-label>
+        <ion-radio slot="start" [value]="item.id" [disabled]="firebaseUrl"></ion-radio>
+      </ion-item>
+
+    </ion-radio-group>
+  </ion-list>
+
+  <img *ngIf="firebaseUrl" [src]="firebaseUrl" (click)="openImage(firebaseUrl)">
+
+  <ion-button class="ion-margin fullbutton2" expand="block" for="image-upload" [disabled]="uploading || skillToAdd == 0" *ngIf="!firebaseUrl">
+    <ion-input type="file"
+        (change)="uploadFile($event.target['files'])">
+    </ion-input>
+    {{'StaffSkills-AddNewSkillButton' | translate}}
+  </ion-button>
+
+  <ion-button class="ion-margin" expand="block" color="primary" [disabled]="uploading" (click)="saveSkill()" *ngIf="firebaseUrl">
+    {{'StaffSkills-SaveChanges' | translate}}
+    <i color="warning" class="icon ion-md-save"></i>
+  </ion-button>
+
+  <ion-button class="ion-margin fullwidth" expand="outline" color="primary" [disabled]="uploading" (click)="reset()" *ngIf="firebaseUrl">
+    {{'StaffSkills-BackToSkills' | translate}}
+  </ion-button>
+  </div>
+  </div>
+</ion-content>

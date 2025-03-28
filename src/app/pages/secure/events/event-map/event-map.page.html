@@ -1,0 +1,50 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button text="Events" defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>
+      Event Map
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div *ngIf="loading" class="backgroundimage">
+    <ion-spinner name="dots">Loading Map...</ion-spinner>
+  </div>
+
+  <div class="ion-padding backgroundimage" *ngIf="!loading && !event">
+    NO LOCATION FOR THIS EVENT
+  </div>
+  <div class="ion-padding backgroundimage" *ngIf="!loading && event">
+    <agm-map class="mapstyle"
+      [styles]="styles" #map id="map" [fitBounds]="event.pickUpDate"
+      [latitude]="event.eventLat" [longitude]="event.eventLng" [zoom]="zoom"
+      [zoomControl]="true" [streetViewControl]="false"
+      [mapTypeControl]="false" mapTypeId="roadmap">
+
+      <agm-marker
+        *ngIf="event.pickUpDate"
+        [iconUrl]="busIconURL"
+        [latitude]="event.pickUpLat"
+        [longitude]="event.pickUpLng"
+        [agmFitBounds]="true">
+        <agm-info-window #infoWindow [disableAutoPan]="false" [isOpen]="true">
+          <p><b>Pickup location</b></p>
+        </agm-info-window>
+      </agm-marker>
+
+      <agm-marker
+        [iconUrl]="eventIconURL"
+        [latitude]="event.eventLat"
+        [longitude]="event.eventLng"
+        [agmFitBounds]="event.pickUpDate">
+        <agm-info-window #infoWindow [disableAutoPan]="false" [isOpen]="true">
+          <p><b>{{ event.name }}</b></p>
+        </agm-info-window>
+      </agm-marker>
+    </agm-map>
+  </div>
+
+</ion-content>

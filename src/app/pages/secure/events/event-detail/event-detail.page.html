@@ -1,0 +1,270 @@
+<ion-header *ngIf="event">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button text="Events" defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>
+      Details
+    </ion-title>
+    <ion-buttons slot="end" *ngIf="(isSuperAdmin || isAdmin) && event.canBeCancelled">
+      <ion-button (click)="cancelEvent()" color="danger">
+        <i slot="start" class="icon ion-md-warning"></i>
+        Cancel
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <div class="ion-padding backgroundimage" *ngIf="event">
+    <div *ngIf="!isStaff">
+      <div class="my-card" [routerLink]="'/events/staff/' + eventId" *ngIf="eventSkills && eventSkills.length > 0">
+        <ion-card-header class="staff-resume">
+          <ion-card-title>Positions Needed</ion-card-title>
+        </ion-card-header>
+        <ion-row>
+        <ion-col size="4" *ngFor="let item of eventSkills">
+          <ion-badge color="tertiary" mode="ios" class="smallest-font">
+            <font>{{item.rhParamSkill.valueEn}}: {{item.quantity}}</font>
+          </ion-badge>
+        </ion-col>
+        </ion-row>
+      </div>
+      <div class="my-card" [routerLink]="'/events/staff/' + eventId">
+        <ion-card-header class="staff-resume">
+          <ion-card-title>Staff (No Response: {{invitedStaff.length}})</ion-card-title>
+          <ion-badge color="warning" mode="ios">
+            View All
+          </ion-badge>
+        </ion-card-header>
+        <ion-row>
+          <ion-col size="4">
+            <ion-badge color="light" mode="ios" class="smallest-font">
+              <b>INVITED</b>
+            </ion-badge>
+          </ion-col>
+          <ion-col size="4">
+            <ion-badge color="light" mode="ios" class="smallest-font">
+              <b>ACCEPTANCE</b>
+            </ion-badge>
+          </ion-col>
+          <ion-col size="4">
+            <ion-badge color="light" mode="ios" class="smallest-font">
+              <b>CONFIRMATION</b>
+            </ion-badge>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col size="4">
+            <ion-badge color="light" mode="ios" class="smallest-font">
+              <font color="green">Pending: {{pendingStaff.length}}</font>
+            </ion-badge>
+          </ion-col>
+          <ion-col size="4">
+            <ion-badge color="light" mode="ios" class="smallest-font">
+              <font color="green">Accepted: {{acceptedStaff.length}}</font>
+            </ion-badge>
+          </ion-col>
+          <ion-col size="4">
+            <ion-badge color="light" mode="ios" class="smallest-font">
+              <font color="green">Confirmed: {{confirmedStaff.length}}</font>
+            </ion-badge>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col size="4">
+            <ion-badge color="light" mode="ios" class="smallest-font">
+              <font color="red">Denied: {{deniedStaff.length}}</font>
+            </ion-badge>
+          </ion-col>
+          <ion-col size="4">
+            <ion-badge color="light" mode="ios" class="smallest-font">
+              <font color="red">Rejected: {{rejectedStaff.length}}</font>
+            </ion-badge>
+          </ion-col>
+          <ion-col size="4">
+            <ion-badge color="light" mode="ios" class="smallest-font">
+              <font color="red">Cancelled: {{rejectedStaff.length}}</font>
+            </ion-badge>
+          </ion-col>
+        </ion-row>
+      </div>
+    </div>
+
+    <ion-badge [color]="staff.statusColor" mode="ios" class="small-badge leftalignedwrap" *ngIf="staff">
+      <i class="icon ion-md-alert"></i>{{staff.statusVisual}}
+    </ion-badge>
+
+    <ion-list-header class="ion-list-header-small">
+      <ion-label>Event Information</ion-label>
+    </ion-list-header>
+    <ion-list class="list-custom" lines="full">
+      <ion-item>
+        <ion-label>
+          <p>Account</p>
+        </ion-label>
+        <ion-input readonly slot="end"
+            class="font-size-small ion-text-right ion-no-padding-end"
+            value="{{ event.client? event.client.company : 'Not Set' }}">
+        </ion-input>
+      </ion-item>
+      <ion-item *ngIf="!isStaff || event.showEndingDate">
+        <ion-label>
+          <p>Event hours</p>
+        </ion-label>
+        <ion-badge color="success" mode="ios" slot="end">{{ event.totalHours }} hrs</ion-badge>
+      </ion-item>
+      <ion-item *ngIf="isStaff && skillInvited">
+        <ion-label>
+          <p>Position Assigned</p>
+        </ion-label>
+        <ion-badge [color]="event.statusColor" mode="ios" slot="end">{{ skillInvited }}</ion-badge>
+        <!-- <ion-input readonly slot="end" class="font-size-small ion-text-right ion-no-padding-end" value="Completed"></ion-input> -->
+      </ion-item>
+      <ion-item>
+        <ion-label>
+          <p>Status</p>
+        </ion-label>
+        <ion-badge [color]="event.statusColor" mode="ios" slot="end">{{ event.statusVisual }}</ion-badge>
+        <!-- <ion-input readonly slot="end" class="font-size-small ion-text-right ion-no-padding-end" value="Completed"></ion-input> -->
+      </ion-item>
+      <ion-item>
+        <ion-label>
+          <p>Starting at</p>
+        </ion-label>
+        <ion-input readonly slot="end" class="font-size-small ion-text-right ion-no-padding-end" value="{{ event.initDateObj | date:'MMM d, y, h:mm a' }}"></ion-input>
+      </ion-item>
+      <ion-item *ngIf="!isStaff || event.showEndingDate">
+        <ion-label>
+          <p>Ending Time</p>
+        </ion-label>
+        <ion-input readonly slot="end" class="font-size-small ion-text-right ion-no-padding-end" value="{{ event.endDateObj | date:'MMM d, y, h:mm a' }}"></ion-input>
+      </ion-item>
+      <ion-item *ngIf="event.confirmationStartDateStaffObj">
+        <ion-label>
+          <p>Confirmation from</p>
+        </ion-label>
+        <ion-input readonly slot="end" class="font-size-small ion-text-right ion-no-padding-end" value="{{ event.confirmationStartDateStaffObj | date:'MMM d, y, h:mm a' }}"></ion-input>
+      </ion-item>
+      <ion-item *ngIf="event.confirmationEndDateStaffObj">
+        <ion-label>
+          <p>Confirmation until</p>
+        </ion-label>
+        <ion-input readonly slot="end" class="font-size-small ion-text-right ion-no-padding-end" value="{{ event.confirmationEndDateStaffObj | date:'MMM d, y, h:mm a' }}"></ion-input>
+      </ion-item>
+    </ion-list>
+
+    <hr class="hr-medium" *ngIf="workedHours">
+    <ion-list-header class="ion-list-header-small" *ngIf="workedHours">
+      <ion-label>Clock In/Out (Working Hours: {{workedHours}})</ion-label>
+    </ion-list-header>
+    <ion-list class="list-custom" lines="full" *ngIf="workedHours">
+      <ion-item detail="false" *ngIf="staff">
+        <ion-avatar slot="start" class="ion-avatar-default-icon">
+          <i color="primary" class="icon ion-md-bus"></i>
+        </ion-avatar>
+        <ion-label>
+          <h3>Clocked In</h3>
+          <p class="font-size-smallest">{{ staff.clockIn | date:'MMM d, y, h:mm a' }}</p>
+        </ion-label>
+        <ion-badge (click)="openClockMap(true)" color="danger" mode="ios" slot="end">Clock In Location</ion-badge>
+      </ion-item>
+      <ion-item detail="false">
+        <ion-avatar slot="start" class="ion-avatar-default-icon">
+          <i color="primary" class="icon ion-md-map"></i>
+        </ion-avatar>
+        <ion-label>
+          <h3>Clocked Out</h3>
+          <p class="font-size-smallest">{{ staff.clockOut | date:'MMM d, y, h:mm a' }}</p>
+        </ion-label>
+        <ion-badge (click)="openClockMap(false)" color="danger" mode="ios" slot="end">Clock Out Location</ion-badge>
+      </ion-item>
+    </ion-list>
+
+    <hr class="hr-medium">
+
+    <ion-list-header class="ion-list-header-small">
+      <ion-label>Location</ion-label>
+    </ion-list-header>
+
+    <ion-list class="list-custom" lines="full">
+      <ion-item detail="false" *ngIf="event.pickUpDate">
+        <ion-avatar slot="start" class="ion-avatar-default-icon">
+          <!-- <ion-icon color="primary" name="bus"></ion-icon> -->
+          <i color="primary" class="icon ion-md-bus"></i>
+        </ion-avatar>
+        <ion-label>
+          <h3>Bus Meeting Point</h3>
+          <p class="font-size-smallest" *ngIf="event.pickUpDateObj">{{ event.pickUpDateObj | date:'MMM d, y, h:mm a' }}</p>
+          <p class="font-size-smallest" *ngIf="event.transportHoursPayment && event.transportHoursPayment > 0 && event.transportHoursPayment < 100">{{ event.transportHoursPayment + ' hours transport payment' }}</p>
+        </ion-label>
+        <ion-badge (click)="openMap(true)" color="warning" mode="ios" slot="end">View Location</ion-badge>
+      </ion-item>
+      <ion-item detail="false">
+        <ion-avatar slot="start" class="ion-avatar-default-icon">
+          <i color="primary" class="icon ion-md-map"></i>
+        </ion-avatar>
+        <ion-label text-wrap>
+          <h3>{{ event.name }}</h3>
+          <p class="font-size-smallest">{{ event.description }}</p>
+        </ion-label>
+        <ion-badge (click)="openMap(false)" color="warning" mode="ios" slot="end">View Location</ion-badge>
+      </ion-item>
+    </ion-list>
+
+    <hr class="hr-medium">
+
+    <div *ngIf="notifications && notifications.length > 0">
+    <ion-list-header class="ion-list-header-small">
+      <ion-label>Messages for this event</ion-label>
+      <ion-badge color="danger" mode="ios">
+        <!-- <ion-icon name="chatbox-ellipses"></ion-icon>7 -->
+        <i color="primary" class="icon ion-md-chatboxes"></i>{{notifications.length}}
+      </ion-badge>
+    </ion-list-header>
+
+    <ion-list class="list-custom" lines="full">
+      <ion-item detail="false" *ngFor="let item of notifications">
+        <ion-avatar slot="start" class="ion-avatar-default-icon">
+          <i color="warning" class="icon ion-md-chatboxes"></i>
+        </ion-avatar>
+        <ion-label text-wrap>
+          <p class="font-size-smallest-right-bold" *ngIf="item.eventId">Event: {{ item.rhEvent.name }}</p>
+          <p class="font-size-smallest-right-bold" *ngIf="item.account">Message to: {{ item.account.name }}</p>
+          <p class="font-size-smallest-right-medium">{{ item.fromName + ', sent from: ' + item.fromAddress }}</p>
+          <p class="font-size-smallest-right-black" *ngIf="item.subject">Sent to staff with status: {{ item.subject | titlecase }}</p>
+          <h3 style="white-space:normal"> {{ item.content }}</h3>
+          <p class="font-size-smallest-right">{{ longToDate(item.createdDate) | date:'MMM d, y, h:mm a' }}</p>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+    </div>
+
+    <hr class="hr-medium">
+
+    <div *ngIf="isStaff && staff && staff.canCancel">
+    <ion-list-header class="ion-list-header-small">
+      <ion-label>Cancel this event?</ion-label>
+    </ion-list-header>
+
+    <ion-list class="list-custom" lines="full">
+      <ion-item detail="false">
+        <ion-select interface="action-sheet" placeholder="Select a reason" [value]="reasonSelected" (ionChange)="reasonSelected = $event.target['value']" class="fullwidth">
+          <ion-select-option [value]="item.valueEn" *ngFor="let item of paramReasons">{{item.valueEn}}</ion-select-option>
+          <ion-select-option value="other">Other reason</ion-select-option>
+        </ion-select>
+      </ion-item>
+      <ion-item detail="false" *ngIf="reasonSelected=='other'">
+        <ion-input type="text" autocomplete="off" [value]="otherReason" (input)="otherReason = $event.target['value']"
+          placeholder="Type your reason"></ion-input>
+      </ion-item>
+      <ion-button class="ion-margin-top" (click)="cancelStaff()" expand="block" color="primary" [disabled]="reasonSelected == '' || (reasonSelected == 'other' && otherReason.length < 8)">
+        Cancel this event invitation
+      </ion-button>
+    </ion-list>
+    </div>
+
+  </div>
+
+</ion-content>

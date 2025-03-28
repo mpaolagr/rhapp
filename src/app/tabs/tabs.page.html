@@ -1,0 +1,86 @@
+<!-- STAFF MENU -->
+<ion-tabs *ngIf="isStaff">
+  <ion-tab-bar slot="bottom">
+
+    <ion-tab-button tab="home">
+      <!-- <ion-icon name="stats-chart"></ion-icon> -->
+      <i class="icon ion-md-stats"></i>
+      <ion-label>{{'TabStaff-Events' | translate}}</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button tab="staff-skills">
+      <!-- <ion-icon name="heart"></ion-icon> -->
+      <i class="icon ion-md-heart"></i>
+      <ion-label>{{'TabStaff-MySkills' | translate}}</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button tab="staff-profile">
+      <!-- <ion-icon name="person"></ion-icon> -->
+      <i class="icon ion-md-person"></i>
+      <ion-label>{{'TabStaff-MyProfile' | translate}}</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button tab="settings">
+      <!-- <ion-icon name="settings"></ion-icon> -->
+      <i class="icon ion-md-settings"></i>
+      <ion-label>{{'TabStaff-Settings' | translate}}</ion-label>
+    </ion-tab-button>
+
+  </ion-tab-bar>
+</ion-tabs>
+
+<!-- MANAGER MENU -->
+<ion-tabs *ngIf="isManager">
+  <ion-tab-bar slot="bottom">
+
+    <ion-tab-button tab="home">
+      <!-- <ion-icon name="stats-chart"></ion-icon> -->
+      <i class="icon ion-md-stats"></i>
+      <ion-label>{{'TabManager-Events' | translate}}</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button tab="staff">
+      <!-- <ion-icon name="people"></ion-icon> -->
+      <i class="icon ion-md-people"></i>
+      <ion-label>{{'TabManager-Staff' | translate}}</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button tab="settings">
+      <!-- <ion-icon name="settings"></ion-icon> -->
+      <i class="icon ion-md-settings"></i>
+      <ion-label>{{'TabManager-Settings' | translate}}</ion-label>
+    </ion-tab-button>
+
+  </ion-tab-bar>
+</ion-tabs>
+
+<!-- ADMIN MENU -->
+<ion-tabs *ngIf="isAdmin || isSuperAdmin">
+  <ion-tab-bar slot="bottom">
+
+    <ion-tab-button tab="home">
+      <!-- <ion-icon name="stats-chart"></ion-icon> -->
+      <i class="icon ion-md-stats"></i>
+      <ion-label>{{'TabAdmin-Events' | translate}}</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button tab="staff">
+      <!-- <ion-icon name="people"></ion-icon> -->
+      <i class="icon ion-md-people"></i>
+      <ion-label>{{'TabAdmin-Staff' | translate}}</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button tab="notifications">
+      <!-- <ion-icon name="chatbox-ellipses"></ion-icon> -->
+      <i class="icon ion-md-chatboxes"></i>
+      <ion-label>{{'TabAdmin-Notifications' | translate}}</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button tab="settings">
+      <!-- <ion-icon name="settings"></ion-icon> -->
+      <i class="icon ion-md-settings"></i>
+      <ion-label>{{'TabAdmin-Settings' | translate}}</ion-label>
+    </ion-tab-button>
+
+  </ion-tab-bar>
+</ion-tabs>

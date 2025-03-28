@@ -1,0 +1,11 @@
+# Node modules
+node_modules/
+
+# Builds
+platforms/
+plugins/
+www/
+dist/
+
+# Environment files
+.env

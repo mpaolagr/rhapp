@@ -1,0 +1,23 @@
+.font-size-smallest-right{
+  font-size: 8px !important;
+  line-height: 12px !important;
+  text-align: right;
+}
+
+.font-size-smallest-right-bold{
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ion-color-warning);
+}
+
+.font-size-smallest-right-medium{
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--ion-color-primary);
+}
+
+.font-size-smallest-right-black{
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--ion-color-secondary);
+}

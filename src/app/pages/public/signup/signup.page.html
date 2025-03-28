@@ -1,0 +1,223 @@
+<ion-header>
+  <ion-toolbar class="ion-no-border">
+    <ion-buttons slot="start">
+      <ion-back-button text="{{'SignUp-GoSignIn' | translate}}" defaultHref="/signin"></ion-back-button>
+    </ion-buttons>
+    <!-- <ion-buttons slot="end">
+      <img src="assets/old-logo.png">
+    </ion-buttons> -->
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <div class="ion-padding ion-flex ion-flex-center">
+
+    <div class="logo-container">
+      <!-- <img src="assets/old-logo.png"> -->
+      <img class="custom-horizontal" src="assets/logo-horizontal-primary.png">
+      <!-- <h1 class="logo-placeholder">{{'AppName' | translate}}</h1> -->
+      <p>{{'SignUp-FillForm' | translate}}</p>
+    </div>
+
+    <ion-item>
+      <ion-label color="primary" class="custom-alert-check" text-wrap>{{'SignUp-Disclaimer' | translate}}</ion-label>
+    </ion-item>
+
+    <form class="form-default" [formGroup]="signup_form" (submit)="signUp()">
+
+      <ion-list-header class="ion-list-header-small">
+        <ion-label>{{'SignUp-PersonalDataTitle' | translate}}</ion-label>
+      </ion-list-header>
+
+      <ion-list class="list-custom">
+        <ion-item>
+          <ion-label color="primary" position="floating">{{'SignUp-LastName' | translate}}</ion-label>
+          <ion-input formControlName="lastname" type="text" autocomplete="off"
+            placeholder="{{'SignUp-LastNameHint' | translate}}"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label color="primary" position="floating">{{'SignUp-FirstName' | translate}}</ion-label>
+          <ion-input formControlName="firstname" type="text" autocomplete="off"
+            placeholder="{{'SignUp-FirstNameHint' | translate}}"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label color="primary" position="floating">{{'SignUp-SocialSecurity' | translate}}</ion-label>
+          <ion-input formControlName="socialsecurity" type="number" autocomplete="off"
+            placeholder="{{'SignUp-SocialSecurityHint' | translate}}"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label color="primary" position="floating">{{'SignUp-Phone' | translate}}</ion-label>
+          <ion-input formControlName="phone" type="phone" autocomplete="off"
+            placeholder="{{'SignUp-PhoneHint' | translate}}"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label color="primary" position="floating">{{'SignUp-Email' | translate}}</ion-label>
+          <ion-input formControlName="email" type="email" autocomplete="off"
+            placeholder="{{'SignUp-EmailHint' | translate}}"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label color="primary">{{'SignUp-Birth' | translate}}</ion-label>
+          <ion-input readonly formControlName="birth" slot="end" type="text" placeholder="{{'SignUp-BirthHint' | translate}}" class="ion-text-right ion-no-padding-end"
+            (click)="toggleBirth()" [(ngModel)]="birthdate"></ion-input>
+        </ion-item>
+        <ion-datetime class="animate__animated animate__fadeIn" *ngIf="birth_active" color="primary" locale="{{lang}}-{{lang | uppercase }}"
+          size="cover" showDefaultButtons="false" [value]="defaultAge" presentation="date" (ionChange)="onBirthSelect($event)" min="{{minAge}}" max="{{maxAge}}">
+        </ion-datetime>
+        <ion-item>
+          <ion-label color="primary">{{'SignUp-Gender' | translate}}</ion-label>
+          <ion-select formControlName="gender"  placeholder="{{'SignUp-GenderHint' | translate}}">
+            <ion-select-option value="M">M</ion-select-option>
+            <ion-select-option value="F">F</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <ion-item>
+          <ion-label color="primary">{{'SignUp-Status' | translate}}</ion-label>
+          <ion-select formControlName="status"  placeholder="{{'SignUp-StatusHint' | translate}}">
+            <ion-select-option value="{{'SignUp-Status1' | translate}}">{{'SignUp-Status1' | translate}}</ion-select-option>
+            <ion-select-option value="{{'SignUp-Status2' | translate}}">{{'SignUp-Status2' | translate}}</ion-select-option>
+            <ion-select-option value="{{'SignUp-Status3' | translate}}">{{'SignUp-Status3' | translate}}</ion-select-option>
+            <ion-select-option value="{{'SignUp-Status4' | translate}}">{{'SignUp-Status4' | translate}}</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <ion-item>
+          <ion-label color="primary" text-wrap>{{'SignUp-Languages' | translate}}</ion-label>
+          <ion-select formControlName="languages" multiple="true"  placeholder="{{'SignUp-LanguagesHint' | translate}}">
+            <ion-select-option value="{{'SignUp-Languages1' | translate}}">{{'SignUp-Languages1' | translate}}</ion-select-option>
+            <ion-select-option value="{{'SignUp-Languages2' | translate}}">{{'SignUp-Languages2' | translate}}</ion-select-option>
+            <ion-select-option value="{{'SignUp-Languages3' | translate}}">{{'SignUp-Languages3' | translate}}</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <ion-item>
+          <ion-input type="text" autocomplete="off"
+            placeholder="{{'SignUp-LanguagesOthers' | translate}}"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label color="primary" text-wrap position="floating">{{'SignUp-EmergName' | translate}}</ion-label>
+          <ion-input formControlName="emergname" type="text" autocomplete="off"
+            placeholder="{{'SignUp-EmergNameHint' | translate}}"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label color="primary" position="floating">{{'SignUp-EmergPhone' | translate}}</ion-label>
+          <ion-input formControlName="emergphone" type="phone" autocomplete="off"
+            placeholder="{{'SignUp-EmergPhoneHint' | translate}}"></ion-input>
+        </ion-item>
+      </ion-list>
+
+      <ion-list-header class="ion-list-header-small">
+        <ion-label>{{'SignUp-AddressTitle' | translate}}</ion-label>
+      </ion-list-header>
+
+      <ion-list class="list-custom">
+        <ion-item>
+          <ion-label color="primary" position="floating">{{'SignUp-AddressStreet' | translate}}</ion-label>
+          <ion-input formControlName="addressstreet" type="text" autocomplete="off"
+            placeholder="{{'SignUp-AddressStreetHint' | translate}}"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label color="primary" position="floating">{{'SignUp-AddressAptNo' | translate}}</ion-label>
+          <ion-input formControlName="addressaptno" type="text" autocomplete="off"
+            placeholder="{{'SignUp-AddressAptNoHint' | translate}}"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label color="primary" position="floating">{{'SignUp-AddressCity' | translate}}</ion-label>
+          <ion-input formControlName="addresscity" type="text" autocomplete="off"
+            placeholder="{{'SignUp-AddressCityHint' | translate}}"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label color="primary" position="floating">{{'SignUp-AddressState' | translate}}</ion-label>
+          <ion-input formControlName="addressstate" type="text" autocomplete="off"
+            placeholder="{{'SignUp-AddressStateHint' | translate}}"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label color="primary" position="floating">{{'SignUp-AddressZipCode' | translate}}</ion-label>
+          <ion-input formControlName="addresszipcode" type="number" autocomplete="off"
+            placeholder="{{'SignUp-AddressZipCodeHint' | translate}}"></ion-input>
+        </ion-item>
+      </ion-list>
+
+      <ion-list-header class="ion-list-header-small">
+        <ion-label>{{'SignUp-LegalTitle' | translate}}</ion-label>
+      </ion-list-header>
+
+      <ion-list class="list-custom">
+        <ion-item>
+          <ion-label color="primary" position="floating">{{'SignUp-DepFederal' | translate}}</ion-label>
+          <ion-input formControlName="depfederal" type="text" autocomplete="off"
+            placeholder="{{'SignUp-DepFederalHint' | translate}}"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label color="primary" position="floating">{{'SignUp-DepState' | translate}}</ion-label>
+          <ion-input formControlName="depstate" type="text" autocomplete="off"
+            placeholder="{{'SignUp-DepStateHint' | translate}}"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label color="primary">{{'SignUp-USCitizen' | translate}}</ion-label>
+          <ion-select formControlName="uscitizen"  placeholder="{{'SignUp-USCitizenHint' | translate}}">
+            <ion-select-option value="{{'SignUp-USCitizenY' | translate}}">{{'SignUp-USCitizenY' | translate}}</ion-select-option>
+            <ion-select-option value="{{'SignUp-USCitizenN' | translate}}">{{'SignUp-USCitizenN' | translate}}</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <ion-item>
+          <ion-label color="primary" text-wrap>{{'SignUp-NoUSCitizen' | translate}}</ion-label>
+          <ion-select  placeholder="{{'SignUp-NoUSCitizenHint' | translate}}">
+            <ion-select-option value="{{'SignUp-NoUSCitizenY' | translate}}">{{'SignUp-NoUSCitizenY' | translate}}</ion-select-option>
+            <ion-select-option value="{{'SignUp-NoUSCitizenN' | translate}}">{{'SignUp-NoUSCitizenN' | translate}}</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <ion-item>
+          <ion-label color="primary" text-wrap>{{'SignUp-Convicted' | translate}}</ion-label>
+          <ion-select formControlName="convicted"  placeholder="{{'SignUp-ConvictedHint' | translate}}">
+            <ion-select-option value="{{'SignUp-ConvictedY' | translate}}">{{'SignUp-ConvictedY' | translate}}</ion-select-option>
+            <ion-select-option value="{{'SignUp-ConvictedN' | translate}}">{{'SignUp-ConvictedN' | translate}}</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <ion-item>
+          <ion-input type="text" autocomplete="off"
+            placeholder="{{'SignUp-ConvictedExplain' | translate}}"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label color="primary" text-wrap>{{'SignUp-Driver' | translate}}</ion-label>
+          <ion-select formControlName="driver"  placeholder="{{'SignUp-DriverHint' | translate}}">
+            <ion-select-option value="{{'SignUp-DriverY' | translate}}">{{'SignUp-DriverY' | translate}}</ion-select-option>
+            <ion-select-option value="{{'SignUp-DriverN' | translate}}">{{'SignUp-DriverN' | translate}}</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <ion-item>
+          <ion-input type="text" autocomplete="off"
+            placeholder="{{'SignUp-DriverLicense' | translate}}"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label color="primary" text-wrap>{{'SignUp-Skills' | translate}}</ion-label>
+          <ion-select formControlName="skills" multiple="true"  placeholder="{{'SignUp-SkillsHint' | translate}}">
+            <ion-select-option value="{{'SignUp-Skills1' | translate}}">{{'SignUp-Skills1' | translate}}</ion-select-option>
+            <ion-select-option value="{{'SignUp-Skills2' | translate}}">{{'SignUp-Skills2' | translate}}</ion-select-option>
+            <ion-select-option value="{{'SignUp-Skills3' | translate}}">{{'SignUp-Skills3' | translate}}</ion-select-option>
+            <ion-select-option value="{{'SignUp-Skills4' | translate}}">{{'SignUp-Skills4' | translate}}</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <ion-item>
+          <ion-input type="text" autocomplete="off"
+            placeholder="{{'SignUp-SkillsOthers' | translate}}"></ion-input>
+        </ion-item>
+      </ion-list>
+
+      <ion-item>
+        <ion-label color="danger" class="custom-alert-check" text-wrap>{{'SignUp-Agreement' | translate}}</ion-label>
+        <ion-checkbox checked="false" color="danger" (ionChange)="acceptConditions()"></ion-checkbox>
+      </ion-item>
+
+      <ion-button class="ion-margin-top" type="submit" expand="block" color="primary" [disabled]="!accepted">
+        {{'SignUp-SendForm' | translate}}
+      </ion-button>
+    </form>
+
+    <div class="ion-text-center ion-margin-top">
+      <ion-text color="medium">
+        <small>&copy; {{current_year}} {{'AppName' | translate}}</small>
+      </ion-text>
+    </div>
+
+  </div>
+
+</ion-content>

@@ -1,0 +1,98 @@
+<ion-header collapse="fade" [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      Events
+    </ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button text="Back" defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+
+    <ion-buttons slot="end">
+      <ion-button [disabled]="lang=='en'" color="primary" (click)="changeLang('en')">
+        <img class="custom-lang-flag" src="assets/lang-en.png">
+      </ion-button>
+      <i color="tertiary" slot="icon-only" class="icon ion-md-code"></i>
+      <ion-button [disabled]="lang=='es'" color="primary" (click)="changeLang('es')">
+        <img class="custom-lang-flag" src="assets/lang-es.png">
+      </ion-button>
+      <ion-button (click)="loadEvents()" color="danger">
+        <i slot="start" class="icon ion-md-refresh"></i>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <ion-toolbar>
+    <ion-grid>
+      <ion-row>
+        <ion-col size="12">
+          <p>
+            {{calendar.mode == 'month' ? ('Events-MonthlyView' | translate) : (calendar.mode == 'week' ? ('Events-WeeklyView' | translate) : ('Events-DailyView' | translate))}}
+            : {{viewTitle}}
+          </p>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size="4">
+          <ion-button class="ion-margin fullbutton" color="primary" [disabled]="calendar.mode == 'month'" expand="block" (click)="changeMode('month')">
+            {{'Events-MonthView' | translate}}
+          </ion-button>
+        </ion-col>
+        <ion-col size="4">
+          <ion-button class="ion-margin fullbutton" color="primary" [disabled]="calendar.mode == 'week'" expand="block" (click)="changeMode('week')">
+            {{'Events-WeekView' | translate}}
+          </ion-button>
+        </ion-col>
+        <ion-col size="4">
+          <ion-button class="ion-margin fullbutton" color="primary" [disabled]="calendar.mode == 'day'" expand="block" (click)="changeMode('day')">
+            {{'Events-DayView' | translate}}
+          </ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-toolbar>
+
+  <div class="ion-padding">
+
+    <!-- Skeletons -->
+    <ng-container *ngIf="!content_loaded">
+      <ion-list-header class="ion-list-header-small">
+        <ion-label><ion-skeleton-text animated style="width: 50%"></ion-skeleton-text></ion-label>
+        <ion-note color="tertiary" class="ion-note-small">
+          <ion-skeleton-text animated style="width: 40px"></ion-skeleton-text>
+        </ion-note>
+      </ion-list-header>
+      <ion-list class="list-custom animate__animated animate__fadeIn" lines="full">
+        <ion-item button detail="false" *ngFor="let i of [].constructor(12);">
+          <ion-avatar slot="start" class="ion-avatar-default-icon">
+            <ion-skeleton-text animated></ion-skeleton-text>
+          </ion-avatar>
+          <ion-label>
+            <h3><ion-skeleton-text animated style="width: 50%"></ion-skeleton-text></h3>
+            <p><ion-skeleton-text animated style="width: 75%"></ion-skeleton-text></p>
+          </ion-label>
+          <ion-skeleton-text slot="end" animated style="width: 15%"></ion-skeleton-text>
+        </ion-item>
+      </ion-list>
+    </ng-container>
+
+    <ng-container *ngIf="content_loaded">
+      <calendar [eventSource]="eventSource"
+        [calendarMode]="calendar.mode"
+        [currentDate]="calendar.currentDate"
+        [locale]="calendar.locale"
+        [scrollToHour]="calendar.scrollToHour"
+        (onEventSelected)="onEventSelected($event)"
+        (onTitleChanged)="onViewTitleChanged($event)"
+        (onCurrentDateChanged)="onCurrentDateChanged($event)"
+        (onTimeSelected)="onTimeSelected($event)"
+        [step]="calendar.step">
+
+      </calendar>
+    </ng-container>
+
+  </div>
+
+</ion-content>

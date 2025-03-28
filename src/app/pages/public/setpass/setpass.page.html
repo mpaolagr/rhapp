@@ -1,0 +1,50 @@
+<ion-header>
+  <ion-toolbar class="ion-no-border">
+    <ion-buttons slot="start">
+      <ion-back-button text="{{'Setpass-GoSignIn' | translate}}" defaultHref="/signin"></ion-back-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <div class="ion-padding ion-flex ion-flex-center">
+
+    <div class="logo-container">
+      <!-- <img src="assets/old-logo.png"> -->
+      <img class="custom-horizontal" src="assets/logo-horizontal.png">
+      <!-- <h1 class="logo-placeholder">{{'Setpass-Title' | translate}}</h1> -->
+      <p>{{'Setpass-Indications' | translate}}</p>
+    </div>
+
+    <form class="form-default" [formGroup]="signup_form" (submit)="updatePass()">
+
+      <ion-list class="list-custom">
+        <ion-item>
+          <ion-label color="primary" position="stacked">{{'Setpass-Email' | translate}}</ion-label>
+          <ion-input [disabled]="true" formControlName="myemail" type="email" autocomplete="off">{{myemail}}</ion-input>
+        </ion-item>
+        <ion-item class="ion-margin-top-small">
+          <ion-label color="tertiary" position="floating">{{'Setpass-Password' | translate}}</ion-label>
+          <ion-input formControlName="newPass" [(ngModel)]="newPass" type="password" placeholder="{{'Setpass-PasswordHint' | translate}}"></ion-input>
+        </ion-item>
+        <ion-item class="ion-margin-top-small">
+          <ion-label color="tertiary" position="floating">{{'Setpass-PasswordRepeat' | translate}}</ion-label>
+          <ion-input formControlName="repeatPass" [(ngModel)]="repeatPass" type="password" placeholder="{{'Setpass-PasswordRepeatHint' | translate}}"></ion-input>
+        </ion-item>
+      </ion-list>
+
+      <ion-button class="ion-margin-top" type="submit" expand="block" color="primary">
+        {{'Setpass-SendForm' | translate}}
+      </ion-button>
+    </form>
+
+    <div class="ion-text-center ion-margin-top">
+      <ion-text color="medium">
+        <small>&copy; {{current_year}} {{'AppName' | translate}}</small>
+      </ion-text>
+    </div>
+
+  </div>
+
+</ion-content>

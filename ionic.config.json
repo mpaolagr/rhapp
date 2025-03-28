@@ -1,0 +1,10 @@
+{
+  "name": "rhstaffingapp",
+  "integrations": {
+    "capacitor": {
+      "enabled": false
+    },
+    "cordova": {}
+  },
+  "type": "angular"
+}

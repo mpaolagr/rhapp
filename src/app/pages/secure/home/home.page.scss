@@ -1,0 +1,108 @@
+.title {
+   font-size: 14px;
+   margin-left: 10%;
+   margin-top: 10px;
+   font-weight: 700;
+}
+
+.card-status{
+  margin-left: 1rem;
+}
+
+.aclarativetext{
+  font-size: 1.6em;
+  padding: 1rem;
+  color: var(--ion-color-tertiary);
+}
+
+.accuracylocation{
+  text-align: right;
+  font-size: 0.7rem;
+}
+
+.nomargin{
+  margin-bottom: 0rem;
+  margin-top: 0rem;
+}
+
+.flexvertical{
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+}
+
+.empty-image{
+  opacity: 0.3;
+  max-height: 100%;
+  max-width: 100%;
+}
+
+.centered{
+  display: flex;
+  justify-content: center;
+  width: 95%;
+}
+
+.marginall{
+  margin: 0.5rem;
+}
+
+.percent {
+   position: absolute;
+   font-size: 14px;
+   left: 30%;
+   bottom: 50%;
+}
+
+.small-text{
+  font-size: 0.7rem;
+}
+
+.medium{
+  font-size: 12px;
+}
+
+.smaller-font {
+    font-size:0.7em;
+    font-weight: 700;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 0.5rem;
+}
+
+ion-button.smaller-font {
+  font{
+    font-size:0.7em;
+    font-weight: 700;
+  }
+}
+
+.icons-left{
+  display: flex;
+  justify-content: flex-end;
+}
+
+.small-badge{
+  width: 50px;
+  height: 35px;
+  display: flex;
+  justify-content: center;
+  margin-right: 10px;
+}
+
+.small-badge-desc{
+  width: 100px;
+  height: 35px;
+  display: flex;
+  justify-content: center;
+  font-weight: 900;
+}
+
+.status-text{
+  color: white;//var(--ion-color-primary);
+  font-weight: 700;
+}
+
+.custom-lang-flag{
+  max-width: 30px;
+}

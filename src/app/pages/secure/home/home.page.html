@@ -1,0 +1,304 @@
+<ion-header padding>
+  <ion-toolbar>
+    <ion-title size="large" class="custom-tab-title">
+      <i color="primary" class="icon ion-md-stats"></i>
+      Events
+    </ion-title>
+
+    <ion-buttons slot="end">
+      <ion-button (click)="loadParams()" color="danger" *ngIf="!loadingEvents">
+        <i slot="start" class="icon ion-md-refresh"></i>
+      </ion-button>
+      <ion-button color="danger" *ngIf="loadingEvents">
+        Loading...
+      </ion-button>
+      <font color="black"><i slot="icon-only" class="icon ion-md-calendar" routerLink="/events">Calendar</i></font>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-button class="ion-margin" expand="block" color="success" (click)="openMarket()"
+    *ngIf="newVersion && newVersion!='' && currentVersion && currentVersion!='' && newVersion!=currentVersion">
+    Install new version available
+  </ion-button>
+  <!-- STAFF OPTIONS -->
+  <div class="ion-padding backgroundimage" *ngIf="isStaff && content_loaded"
+       [style]="events.length <= 0 && (thisWeek + lastWeek + thisMonth) <= 0 ? 'height:100%' : ''">
+    <!-- CURRENT LOCATION -->
+    <ion-list-header *ngIf="soonList.length>0 && currentLocation && currentLocation['accuracy'] && paramsGeofence" class="nomargin">
+      <ion-label class="accuracylocation">
+        <font [color]="currentLocation['accuracy'] <= paramsGeofence.valueEs ? 'green' : 'red'">
+          {{ currentLocation['accuracy'] <= paramsGeofence.valueEs ? 'Searching near events...' : 'Find a clear spot for best GPS results...'}}
+        </font><br>
+        <font *ngIf="currentLocation && currentLocation['accuracy']">
+          {{ currentLocation['accuracy'] | number: '1.0-0'}} meters of accuracy
+        </font>
+      </ion-label>
+    </ion-list-header>
+    <!-- PERFORMANCE GRAPH SECTION -->
+    <div *ngIf="(thisWeek + lastWeek + thisMonth) > 0">
+      <ion-list-header>
+        <ion-label>Performance</ion-label>
+      </ion-list-header>
+      <ion-grid>
+        <ion-row>
+          <ion-col size="4">
+            <canvas baseChart [data]="bar_chart_data_1" [options]="bar_chart_option" [type]="bar_chart_type">
+            </canvas>
+            <p class="percent">{{ thisWeek }} hrs</p>
+            <p class="title">This Week</p>
+          </ion-col>
+          <ion-col size="4">
+            <canvas baseChart [data]="bar_chart_data_2" [options]="bar_chart_option" [type]="bar_chart_type">
+            </canvas>
+            <p class="percent">{{ lastWeek }} hrs</p>
+            <p class="title">Last Week</p>
+          </ion-col>
+          <ion-col size="4">
+            <canvas baseChart [data]="bar_chart_data_3" [options]="bar_chart_option" [type]="bar_chart_type">
+            </canvas>
+            <p class="percent">{{ thisMonth }} hrs</p>
+            <p class="title">This Month</p>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </div>
+
+    <!-- COMING EVENTS SECTION -->
+    <div *ngIf="eventsComing.length > 0">
+      <ion-list-header>
+        <ion-label>
+          <font color="gray"> Coming/OnGoing Events </font>
+        </ion-label>
+      </ion-list-header>
+      <!-- SKELETON PLACEHOLDER -->
+      <div class="ion-padding" *ngIf="!content_loaded">
+        <ion-list class="list-custom animate__animated animate__fadeIn" lines="full" *ngIf="!content_loaded">
+          <ion-item *ngFor="let i of [].constructor(3);">
+            <ion-label>
+              <h3><ion-skeleton-text animated style="width: 50%"></ion-skeleton-text></h3>
+              <p><ion-skeleton-text animated style="width: 70%"></ion-skeleton-text></p>
+            </ion-label>
+            <ion-skeleton-text slot="end" animated style="width: 10%"></ion-skeleton-text>
+          </ion-item>
+        </ion-list>
+      </div>
+      <div *ngIf="content_loaded">
+        <ion-card *ngFor="let item of eventsComing">
+          <ion-card-header [routerLink]="'/events/detail/' + (isStaff ? item.rhEvent.id : item.id)">
+            <ion-avatar slot="start" class="ion-avatar-default-icon">
+              <i color="primary" class="icon ion-md-briefcase"></i>
+            </ion-avatar>
+            <ion-card-title>{{ isStaff ? (item.rhEvent.client ? item.rhEvent.client.company : '') : (item.client? item.client.company : '') }}</ion-card-title>
+            <ion-card-subtitle>{{ item.rhEvent.name }}</ion-card-subtitle>
+            <ion-card-subtitle>{{ longToDate(isStaff ? item.rhEvent.initDate : item.initDate) | date:'MMM d, y, h:mm a' }}</ion-card-subtitle>
+            <!-- <ion-card-subtitle>
+              <font [color]="item.rhEvent.status == 'ENABLED' ? 'green' : 'red'">
+                Event Status: {{ item.rhEvent.status | titlecase }}
+              </font>
+            </ion-card-subtitle> -->
+          </ion-card-header>
+          <div><!-- footer -->
+            <font class="card-status" *ngIf="item.status != 'INVITED' && item.status != 'APPROVED'">
+              Status: {{ item.status | titlecase }}
+            </font>
+            <!-- ACCEPT / REJECT INVITATIONS -->
+            <div *ngIf="item.status == 'INVITED' || item.status == 'APPROVED'">
+              <ion-row *ngIf="disabledEvent(item)" class="centered card-span-font">
+                <div *ngIf="item.status == 'INVITED'" class="aclarativetext">
+                  {{ item.rhEvent.eventCloseDate < today ? 'Unfortunately you did not accepted on time!' : 'Accept this invitation before ' + ( longToDate(item.rhEvent.eventCloseDate) | date:'MMM d, y, h:mm a') }}
+                </div>
+                <div *ngIf="item.status == 'APPROVED' && item.rhEvent.confirmationEndDateStaff < today" class="aclarativetext">
+                  Unfortunately you did not confirm on time!
+                </div>
+                <div *ngIf="item.status == 'APPROVED' && item.rhEvent.confirmationStartDateStaff > today" class="aclarativetext">
+                  {{ 'Do not forget to confirm on ' + (longToDate(item.rhEvent.confirmationStartDateStaff) | date:'MMM d') + ' from ' + (longToDate(item.rhEvent.confirmationStartDateStaff) | date:'h:mm a') + ' to ' + (longToDate(item.rhEvent.confirmationEndDateStaff) | date:'h:mm a') }}
+                </div>
+              </ion-row>
+              <ion-row>
+                <ion-col size="6">
+                  <ion-button class="ion-margin" expand="block" color="success" [disabled]="disabledEvent(item)" (click)="respondInvitation(true, item)">
+                    {{item.status == 'INVITED'? 'ACCEPT' : 'CONFIRM'}}
+                  </ion-button>
+                </ion-col>
+                <ion-col size="6">
+                  <ion-button class="ion-margin" expand="block" color="danger" [disabled]="disabledEvent(item)" (click)="respondInvitation(false, item)">
+                    {{item.status == 'APPROVED'? 'REJECT' : 'CANCEL'}}
+                  </ion-button>
+                </ion-col>
+              </ion-row>
+            </div>
+            <div class="ion-margin" *ngIf="!item.showClockIn && item.status == 'CONFIRMED' && (!item.clockIn || !item.clockOut)">
+              <ion-card-subtitle>
+                <font color="orange">{{ 'Get closer to the event location to clock ' + (item.clockIn ? 'out' : 'in') }}</font><br>
+                <font color="orange" *ngIf="item.distanceFromEvent">{{ 'This event is ' + item.distanceFromEvent + ' meters away' }}</font>
+              </ion-card-subtitle>
+            </div>
+            <!-- CLOCK IN / OUT OPTIONS (EVENT CONFIRMED) -->
+            <div *ngIf="item.showClockIn && item.status == 'CONFIRMED'">
+              <ion-button expand="outline" class="centered marginall" [color]="!item.clockIn? 'success' : 'danger'" (click)="confirmClock(item)">
+                <font *ngIf="!item.clockIn">Clock In</font>
+                <font *ngIf="item.clockIn">Clock Out</font>
+              </ion-button>
+            </div>
+          </div><!-- footer -->
+        </ion-card>
+      </div>
+    </div>
+    <!-- PAST EVENT SECTIONS -->
+    <div *ngIf="eventsPast.length > 0">
+    <ion-list-header>
+      <ion-label>
+        <font color="gray"> Past Events </font>
+      </ion-label>
+    </ion-list-header>
+    <!-- SKELETON PLACEHOLDER -->
+    <div class="ion-padding" *ngIf="!content_loaded">
+      <ion-list class="list-custom animate__animated animate__fadeIn" lines="full" *ngIf="!content_loaded">
+        <ion-item *ngFor="let i of [].constructor(3);">
+          <ion-label>
+            <h3><ion-skeleton-text animated style="width: 50%"></ion-skeleton-text></h3>
+            <p><ion-skeleton-text animated style="width: 70%"></ion-skeleton-text></p>
+          </ion-label>
+          <ion-skeleton-text slot="end" animated style="width: 10%"></ion-skeleton-text>
+        </ion-item>
+      </ion-list>
+    </div>
+    <ion-list class="list-custom animate__animated animate__fadeIn" lines="full" *ngIf="content_loaded">
+      <ion-item *ngFor="let item of eventsPast" button [routerLink]="'/events/detail/' + item.rhEvent.id">
+        <ion-avatar slot="start" class="ion-avatar-default-icon">
+          <i color="primary" class="icon ion-md-briefcase"></i>
+        </ion-avatar>
+        <ion-label>
+          <p class="small-text" *ngIf="item.rhEvent.client">{{ item.rhEvent.client ? item.rhEvent.client.company : '' }}</p>
+          <h3 class="medium-text">{{ item.rhEvent.name }}</h3>
+          <p class="small-text">{{ longToDate(item.rhEvent.initDate) | date:'MMM d, y, h:mm a' }}</p>
+          <font color="darkgreen">
+            <p class="small-text" *ngIf="item.workedHours">Total Working Hours: {{ item.workedHours }}</p>
+          </font>
+          <font color="orange">
+            <p class="small-text" *ngIf="item.busHours">Transport Extra Hours: {{ item.busHours }}</p>
+          </font>
+          <!-- <font [color]="item.rhEvent.status == 'ENABLED' ? 'green' : 'red'">
+            <p class="small-text">Event Status: {{ item.rhEvent.status }}</p>
+          </font> -->
+        </ion-label>
+        <ion-badge color="primary" mode="ios" slot="end">{{ item.status | titlecase }}</ion-badge>
+      </ion-item>
+    </ion-list>
+    </div>
+    <div *ngIf="eventsPast.length + eventsComing.length <= 0 && (thisWeek + lastWeek + thisMonth) <= 0">
+      <!-- EMPTY CONTENT (NORMALLY: NEW USER) -->
+      <h1 class="centered">Welcome to RH Staffing LLC!</h1>
+      <span class="centered">Soon you will be invited to an event and will receive a notification, so keep this app installed to receive invitations!</span>
+      <img class="empty-image" src="assets/logo-primary.png">
+    </div>
+  </div>
+
+  <!-- ADMIN/MANAGER OPTIONS -->
+  <div class="ion-padding" *ngIf="isSuperAdmin || isAdmin || isManager">
+    <ion-searchbar [(ngModel)]="searchValue" (ionChange)="filterEvents()"
+       showCancelButton="focus" placeholder="Customer, Event name ...">
+     </ion-searchbar>
+    <ion-list-header *ngIf="eventsComing && eventsComing.length > 0">
+      <ion-label>
+        <font color="green"> Coming Events </font>
+      </ion-label>
+    </ion-list-header>
+    <!-- SKELETON PLACEHOLDER -->
+    <div class="ion-padding" *ngIf="!content_loaded && eventsComing && eventsComing.length > 0">
+      <ion-list class="list-custom animate__animated animate__fadeIn" lines="full" *ngIf="!content_loaded">
+        <ion-item *ngFor="let i of [].constructor(3);">
+          <ion-label>
+            <h3><ion-skeleton-text animated style="width: 50%"></ion-skeleton-text></h3>
+            <p><ion-skeleton-text animated style="width: 70%"></ion-skeleton-text></p>
+          </ion-label>
+          <ion-skeleton-text slot="end" animated style="width: 10%"></ion-skeleton-text>
+        </ion-item>
+      </ion-list>
+    </div>
+    <ion-list class="list-custom animate__animated animate__fadeIn" lines="full" *ngIf="content_loaded && (isAdmin || isSuperAdmin) && eventsComing && eventsComing.length > 0">
+      <ion-item *ngFor="let item of eventsComing" button [routerLink]="'/events/detail/' + item.id">
+        <ion-avatar slot="start" class="ion-avatar-default-icon">
+          <i color="primary" class="icon ion-md-briefcase"></i>
+        </ion-avatar>
+        <ion-label>
+          <p class="small-text" *ngIf="item.client">{{ item.client ? item.client.company : '' }}</p>
+          <h3 class="medium-text">{{ item.name }}</h3>
+          <p class="small-text">{{ longToDate(item.initDate) | date:'MMM d, y, h:mm a' }}</p>
+          <!-- <font [color]="item.status == 'ENABLED' ? 'green' : 'red'">
+            <p class="small-text">Event Status: {{ item.status | titlecase }}</p>
+          </font> -->
+        </ion-label>
+        <ion-badge color="success" mode="ios" slot="end">{{ eventHours(item) + ' hrs' }}</ion-badge>
+      </ion-item>
+    </ion-list>
+    <ion-list class="list-custom animate__animated animate__fadeIn" lines="full" *ngIf="content_loaded && isManager && eventsComing && eventsComing.length > 0">
+      <ion-item *ngFor="let item of eventsComing" button [routerLink]="'/events/detail/' + item.rhEvent.id">
+        <ion-avatar slot="start" class="ion-avatar-default-icon">
+          <i color="primary" class="icon ion-md-briefcase"></i>
+        </ion-avatar>
+        <ion-label>
+          <p class="small-text" *ngIf="item.rhEvent.client">{{ item.rhEvent.client ? item.rhEvent.client.company : '' }}</p>
+          <h3 class="medium-text">{{ item.rhEvent.name }}</h3>
+          <p class="small-text">{{ longToDate(item.rhEvent.initDate) | date:'MMM d, y, h:mm a' }}</p>
+          <!-- <font [color]="item.rhEvent.status == 'ENABLED' ? 'green' : 'red'">
+            <p class="small-text">Event Status: {{ item.rhEvent.status | titlecase }}</p>
+          </font> -->
+        </ion-label>
+        <ion-badge color="success" mode="ios" slot="end">{{ eventHours(item.rhEvent) + ' hrs' }}</ion-badge>
+      </ion-item>
+    </ion-list>
+    <ion-list-header *ngIf="eventsPast && eventsPast.length > 0">
+      <ion-label>
+        <font color="red"> Past Events </font>
+      </ion-label>
+    </ion-list-header>
+    <!-- SKELETON PLACEHOLDER -->
+    <div class="ion-padding" *ngIf="!content_loaded && eventsPast && eventsPast.length > 0">
+      <ion-list class="list-custom animate__animated animate__fadeIn" lines="full" *ngIf="!content_loaded">
+        <ion-item *ngFor="let i of [].constructor(3);">
+          <ion-label>
+            <h3><ion-skeleton-text animated style="width: 50%"></ion-skeleton-text></h3>
+            <p><ion-skeleton-text animated style="width: 70%"></ion-skeleton-text></p>
+          </ion-label>
+          <ion-skeleton-text slot="end" animated style="width: 10%"></ion-skeleton-text>
+        </ion-item>
+      </ion-list>
+    </div>
+    <ion-list class="list-custom animate__animated animate__fadeIn" lines="full" *ngIf="content_loaded && (isAdmin || isSuperAdmin) && eventsPast && eventsPast.length > 0">
+      <ion-item *ngFor="let item of eventsPast" button [routerLink]="'/events/detail/' + item.id">
+        <ion-avatar slot="start" class="ion-avatar-default-icon">
+          <i color="primary" class="icon ion-md-briefcase"></i>
+        </ion-avatar>
+        <ion-label>
+          <p class="small-text" *ngIf="item.client">{{ item.client ? item.client.company : '' }}</p>
+          <h3 class="medium-text">{{ item.name }}</h3>
+          <p class="small-text">{{ longToDate(item.initDate) | date:'MMM d, y, h:mm a' }}</p>
+          <!-- <font [color]="item.status == 'ENABLED' ? 'green' : 'red'">
+            <p class="small-text">Event Status: {{ item.status | titlecase }}</p>
+          </font> -->
+        </ion-label>
+        <ion-badge color="success" mode="ios" slot="end">{{ eventHours(item) + ' hrs' }}</ion-badge>
+      </ion-item>
+    </ion-list>
+    <ion-list class="list-custom animate__animated animate__fadeIn" lines="full" *ngIf="content_loaded && isManager && eventsPast && eventsPast.length > 0">
+      <ion-item *ngFor="let item of eventsPast" button [routerLink]="'/events/detail/' + item.rhEvent.id">
+        <ion-avatar slot="start" class="ion-avatar-default-icon">
+          <i color="primary" class="icon ion-md-briefcase"></i>
+        </ion-avatar>
+        <ion-label>
+          <p class="small-text" *ngIf="item.rhEvent.client">{{ item.rhEvent.client ? item.rhEvent.client.company : '' }}</p>
+          <h3 class="medium-text">{{ item.rhEvent.name }}</h3>
+          <p class="small-text">{{ longToDate(item.rhEvent.initDate) | date:'MMM d, y, h:mm a' }}</p>
+          <!-- <font [color]="item.rhEvent.status == 'ENABLED' ? 'green' : 'red'">
+            <p class="small-text">Event Status: {{ item.rhEvent.status | titlecase }}</p>
+          </font> -->
+        </ion-label>
+        <ion-badge color="success" mode="ios" slot="end">{{ eventHours(item.rhEvent) + ' hrs' }}</ion-badge>
+      </ion-item>
+    </ion-list>
+  </div>
+
+</ion-content>

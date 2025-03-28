@@ -1,0 +1,79 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title size="large" class="custom-tab-title">
+      <!-- <ion-icon name="chevron-forward-outline" color="primary"></ion-icon> -->
+      <i color="primary" class="icon ion-md-settings"></i>
+      {{'Settings-Header' | translate}}
+    </ion-title>
+
+    <ion-buttons slot="end">
+      <ion-button [disabled]="lang=='en'" color="primary" (click)="changeLang('en')">
+        <img class="custom-lang-flag" src="assets/lang-en.png">
+      </ion-button>
+      <!-- <ion-icon slot="icon-only" color="tertiary" name="code-outline"></ion-icon> -->
+      <i color="tertiary" slot="icon-only" class="icon ion-md-code"></i>
+      <ion-button [disabled]="lang=='es'" color="primary" (click)="changeLang('es')">
+        <img class="custom-lang-flag" src="assets/lang-es.png">
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="ion-padding backgroundimage">
+
+    <ion-list-header class="ion-list-header-small" *ngIf="profile=='staff'">
+      <ion-label>{{'Settings-NewEventsTitle' | translate}}</ion-label>
+    </ion-list-header>
+    <ion-list class="list-custom" lines="full" *ngIf="profile=='staff'">
+      <ion-item detail="false">
+        <!-- <ion-icon slot="start" color="medium" name="briefcase"></ion-icon> -->
+        <i color="medium" slot="start" class="icon ion-md-briefcase"></i>
+        <ion-label>
+          <h3>{{'Settings-Available' | translate}}</h3>
+        </ion-label>
+        <ion-toggle checked slot="end"></ion-toggle>
+      </ion-item>
+      <p class="list-description">{{'Settings-AvailableTips' | translate}}</p>
+    </ion-list>
+
+    <ion-list-header class="ion-list-header-small">
+      <ion-label>{{'Settings-SecurityTitle' | translate}}</ion-label>
+    </ion-list-header>
+
+    <ion-list class="list-custom" lines="full">
+      <ion-item>
+        <ion-label color="primary" position="stacked">{{'Settings-Password' | translate}}</ion-label>
+        <ion-input type="password" [(ngModel)]="newPass" placeholder="***************"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label color="primary" position="stacked">{{'Settings-RepeatPassword' | translate}}</ion-label>
+        <ion-input type="password" [(ngModel)]="repeatPass" placeholder="***************"></ion-input>
+      </ion-item>
+    </ion-list>
+
+    <ion-button class="ion-margin-top" expand="block" color="primary" (click)="updatePass()">
+      {{'Settings-ChangePassword' | translate}}
+    </ion-button>
+
+    <hr class="hr-medium">
+
+    <ion-list class="list-custom" lines="full">
+      <ion-item button detail=false (click)="signOut()" *ngIf="!isStaff">
+        <!-- <ion-icon slot="start" color="danger" name="log-out"></ion-icon> -->
+        <i color="danger" slot="start" class="icon ion-md-log-out"></i>
+        <ion-label color="danger">
+          <h3>{{'Settings-Logout' | translate}}</h3>
+        </ion-label>
+      </ion-item>
+      <ion-item button detail=false (click)="clearData()">
+        <i color="danger" slot="start" class="icon ion-md-log-out"></i>
+        <ion-label color="danger">
+          <h3>{{'Settings-ClearData' | translate}}</h3>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+
+  </div>
+
+</ion-content>

@@ -1,0 +1,98 @@
+<ion-header collapse="fade" [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      Messages
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <div class="ion-padding backgroundimage">
+
+    <ion-list-header class="ion-list-header-small">
+      <ion-label>Create new message</ion-label>
+    </ion-list-header>
+
+    <ion-list class="item-card-list" lines="none">
+      <ion-item>
+        <ion-label color="tertiary" position="floating">Select Event (Optional)</ion-label>
+        <ion-select [value]="newmessage.eventId" (ionChange)="selectEvent($event)" placeholder="select">
+          <ion-select-option value="0"> - Unselect Event - </ion-select-option>
+          <ion-select-option [value]="item.id" *ngFor="let item of events">{{ item.name }}</ion-select-option>
+        </ion-select>
+      </ion-item>
+      <ion-item *ngIf="newmessage.eventId != 0">
+        <ion-label color="tertiary" position="floating">Staff Status</ion-label>
+        <ion-select [value]="newmessage.subject" (ionChange)="selectSubject($event)" placeholder="select">
+          <ion-select-option value="ALL">All</ion-select-option>
+          <ion-select-option value="INVITED">Invited</ion-select-option>
+          <ion-select-option value="PENDING">Pending to accept</ion-select-option>
+          <ion-select-option value="ACCEPTED">Accepted</ion-select-option>
+          <ion-select-option value="CONFIRMED">Confirmed</ion-select-option>
+        </ion-select>
+      </ion-item>
+      <!-- <ion-item>
+        <ion-label color="tertiary" position="floating">Select Staff (Optional)</ion-label>
+        <ion-select [value]="newmessage.accountId" (ionChange)="selectStaff($event)" placeholder="select">
+          <ion-select-option [value]="item.id" *ngFor="let item of staffs">{{ item.firstName + ' ' + item.lastName }}</ion-select-option>
+        </ion-select>
+      </ion-item> -->
+      <ion-item>
+        <ion-label color="tertiary" position="floating">Message</ion-label>
+        <ion-textarea maxlength="256" rows="6" cols="20" [(ngModel)]="newmessage.content" placeholder="text a message to send..."></ion-textarea>
+      </ion-item>
+      <ion-text class="ion-margin">
+        <small>This message will be sent to staff invited on selected event.</small>
+      </ion-text>
+      <ion-item>
+        <ion-button expand="block" color="primary" (click)="save()">
+          Send Message
+        </ion-button>
+      </ion-item>
+    </ion-list>
+
+    <!-- Skeletons -->
+    <ng-container *ngIf="!content_loaded">
+      <ion-list-header class="ion-list-header-small">
+        <ion-label><ion-skeleton-text animated style="width: 50%"></ion-skeleton-text></ion-label>
+        <ion-note color="tertiary" class="ion-note-small">
+          <ion-skeleton-text animated style="width: 40px"></ion-skeleton-text>
+        </ion-note>
+      </ion-list-header>
+      <ion-list class="list-custom animate__animated animate__fadeIn" lines="full">
+        <ion-item button detail="false" *ngFor="let i of [].constructor(12);">
+          <ion-avatar slot="start" class="ion-avatar-default-icon">
+            <ion-skeleton-text animated></ion-skeleton-text>
+          </ion-avatar>
+          <ion-label>
+            <h3><ion-skeleton-text animated style="width: 50%"></ion-skeleton-text></h3>
+            <p><ion-skeleton-text animated style="width: 75%"></ion-skeleton-text></p>
+          </ion-label>
+          <ion-skeleton-text slot="end" animated style="width: 15%"></ion-skeleton-text>
+        </ion-item>
+      </ion-list>
+    </ng-container>
+
+    <ion-list-header class="ion-list-header-small" *ngIf="content_loaded">
+      <ion-label>Messages Sent</ion-label>
+    </ion-list-header>
+
+    <ion-list class="list-custom" lines="full" *ngIf="content_loaded">
+      <ion-item detail="false" button *ngFor="let item of messages">
+        <ion-avatar slot="start" class="ion-avatar-default-icon">
+          <i color="warning" class="icon ion-md-chatboxes"></i>
+        </ion-avatar>
+        <ion-label>
+          <p class="font-size-smallest-right-bold" *ngIf="item.rhEvent">Event: {{ item.rhEvent.name }}</p>
+          <p class="font-size-smallest-right-bold" *ngIf="item.account">Message to: {{ item.account.name }}</p>
+          <p class="font-size-smallest-right-medium">{{ item.fromName + ', sent from: ' + item.fromAddress }}</p>
+          <p class="font-size-smallest-right-black" *ngIf="item.subject">Sent to {{ item.subject | titlecase }}-Event staff</p>
+          <h3 style="white-space:normal"> {{ item.content }}</h3>
+          <p class="font-size-smallest-right">{{ longToDate(item.createdDate) | date:'MMM d, y, h:mm a' }}</p>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+  </div>
+
+</ion-content>

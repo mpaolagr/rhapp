@@ -1,0 +1,655 @@
+<ion-header>
+  <ion-toolbar class="ion-no-border">
+    <ion-buttons slot="start">
+      <ion-back-button text="{{'SignUp-GoSignIn' | translate}}" defaultHref="/signin"></ion-back-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button [disabled]="lang=='en'" color="primary" (click)="changeLang('en')">
+        <img class="custom-lang-flag" src="assets/lang-en.png">
+      </ion-button>
+      <i class="icon ion-md-code"></i>
+      <ion-button [disabled]="lang=='es'" color="primary" (click)="changeLang('es')">
+        <img class="custom-lang-flag" src="assets/lang-es.png">
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="backgroundwhite">
+  <div *ngIf="loadingForm">
+    <!-- <ion-spinner name="dots">Loading Form...</ion-spinner> -->
+  </div>
+
+  <div *ngIf="savedStaff" class="savedform">
+    <img src="assets/savedform.png" class="successimage">
+    <h1 class="logo-placeholder">{{'Welcome-SavedForm' | translate}}</h1>
+  </div>
+
+  <form class="form-default fixed-swiper" (submit)="testing()" *ngIf="isTesting && !savedStaff">
+    <ion-list>
+      <ion-item>
+        <ion-label color="primary" position="stacked">{{'SignUp-LastName' | translate}}</ion-label>
+        <ion-input type="text" autocomplete="off" [(ngModel)]="wizard.lastName"
+          placeholder="{{'SignUp-LastNameHint' | translate}}"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label color="primary" position="stacked">{{'SignUp-FirstName' | translate}}</ion-label>
+        <ion-input type="text" autocomplete="off" [(ngModel)]="wizard.firstName"
+          placeholder="{{'SignUp-FirstNameHint' | translate}}"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label color="primary" position="stacked">{{'SignUp-Email' | translate}}</ion-label>
+        <ion-input type="email" autocomplete="off" [(ngModel)]="wizard.email"
+          placeholder="{{'SignUp-EmailHint' | translate}}"></ion-input>
+      </ion-item>
+    </ion-list>
+    <ion-grid>
+      <ion-row>
+        <ion-col size="12">
+          <ion-button class="ion-margin" expand="block" type="submit" [disabled]="savingInfo">
+            {{savingInfo ? ('Welcome-Saving' | translate) : ('Welcome-Test' | translate)}}
+          </ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+    <ion-item>
+    </ion-item>
+  </form>
+
+  <div class="swiper-register" *ngIf="!loadingForm && !isTesting && !savedStaff">
+
+    <!-- INTRO SWIPE -->
+    <div *ngIf="currentStep==STEP_INTRO">
+      <div class="ion-padding" *ngIf="completedForm">
+        <ion-list-header>
+          <ion-label>{{'SignUp-CompletedTitle' | translate}}</ion-label>
+        </ion-list-header>
+        <ion-list class="list-custom animate__animated animate__fadeIn" lines="full">
+          <ion-item>
+            <ion-checkbox checked="true" disabled color="medium"></ion-checkbox>
+            {{'SignUp-CompletedMessage' | translate}}
+          </ion-item>
+        </ion-list>
+      </div>
+      <div class="ion-padding" *ngIf="!completedForm">
+        <ion-button color="primary" disabled="true" fill="clear" expand="block" class="ion-button-small ion-margin-top-medium">
+          {{'SignUp-BeforePending' | translate}}
+        </ion-button>
+        <ion-list-header>
+          <ion-label>{{'SignUp-PendingTitle' | translate}}</ion-label>
+        </ion-list-header>
+        <ion-list class="list-custom animate__animated animate__fadeIn" lines="full">
+          <ion-item>
+            <ion-checkbox checked="true" disabled color="medium"></ion-checkbox>
+            {{'SignUp-PendingPersonal' | translate}}
+          </ion-item>
+          <ion-item>
+            <ion-checkbox checked="true" disabled color="medium"></ion-checkbox>
+            {{'SignUp-PendingProfilePic' | translate}}
+          </ion-item>
+          <ion-item>
+          </ion-item>
+          <ion-button expand="block" color="primary" class="smaller-font" (click)="nextSlide()">
+            {{'SignUp-LetsStart' | translate}}
+          </ion-button>
+          <ion-button color="primary" fill="clear" expand="block" class="ion-button-small ion-margin-top-medium" (click)="clearAll()">
+            {{'SignUp-Restart' | translate}}
+          </ion-button>
+        </ion-list>
+      </div>
+    </div>
+
+    <!-- PERSONAL SWIPE -->
+    <div *ngIf="currentStep==STEP_PERSONAL">
+      <ion-toolbar class="ion-no-border smalltoolbar">
+        <ion-title class="nopaddingtitle">
+          {{'SignUp-PersonalDataTitle' | translate}}
+        </ion-title>
+      </ion-toolbar>
+      <form class="form-default fixed-swiper" (submit)="savePersonal()">
+        <ion-list>
+          <ion-item>
+            <ion-label color="primary" position="stacked">{{'SignUp-LastName' | translate}}</ion-label>
+            <ion-input type="text" autocomplete="off" [value]="wizard.lastName" (input)="wizard.lastName = $event.target['value']"
+              placeholder="{{'SignUp-LastNameHint' | translate}}"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label color="primary" position="stacked">{{'SignUp-FirstName' | translate}}</ion-label>
+            <ion-input type="text" autocomplete="off" [value]="wizard.firstName" (input)="wizard.firstName = $event.target['value']"
+              placeholder="{{'SignUp-FirstNameHint' | translate}}"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label color="primary" position="stacked">{{'SignUp-Alias' | translate}}</ion-label>
+            <ion-input type="text" autocomplete="off" [value]="wizard.alias" (input)="wizard.alias = $event.target['value']"
+              placeholder="{{'SignUp-LastNameHint' | translate}}"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label color="primary" position="stacked">{{'SignUp-SocialSecurity' | translate}}</ion-label>
+            <ion-input type="text" autocomplete="off" [value]="wizard.socialSecurity" (input)="wizard.socialSecurity = $event.target['value']"
+              placeholder="{{'SignUp-SocialSecurityHint' | translate}}"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label color="primary" position="stacked">{{'SignUp-Phone' | translate}}</ion-label>
+            <ion-input type="phone" autocomplete="off" [value]="wizard.phoneNumber" (input)="wizard.phoneNumber = $event.target['value']"
+              placeholder="{{'SignUp-PhoneHint' | translate}}"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label color="primary" position="stacked">{{'SignUp-Email' | translate}}</ion-label>
+            <ion-input type="email" autocomplete="off" [value]="wizard.email" (input)="wizard.email = $event.target['value']"
+              placeholder="{{'SignUp-EmailHint' | translate}}"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label color="primary">{{'SignUp-Birth' | translate}}</ion-label>
+            <ion-button (click)="selectBirth()">{{wizard.birthdaystr ? wizard.birthdaystr : 'Select a date'}}</ion-button>
+          </ion-item>
+          <ion-item>
+            <ion-label color="primary">{{'SignUp-Gender' | translate}}</ion-label>
+            <ion-select placeholder="{{'SignUp-GenderHint' | translate}}" [value]="wizard.gender" (ionChange)="wizard.gender = $event.target['value']">
+              <ion-select-option [value]="item.valueEn" *ngFor="let item of paramGender">{{item.actualLang}}</ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-item>
+            <ion-label color="primary">{{'SignUp-Status' | translate}}</ion-label>
+            <ion-select  placeholder="{{'SignUp-StatusHint' | translate}}" [value]="wizard.status" (ionChange)="wizard.status = $event.target['value']">
+              <ion-select-option [value]="item.id" *ngFor="let item of paramStatus">{{item.actualLang}}</ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-item>
+            <ion-label color="primary" text-wrap>{{'SignUp-Languages' | translate}}</ion-label>
+            <ion-select multiple="true"  placeholder="{{'SignUp-LanguagesHint' | translate}}" [value]="wizard.languages" (ionChange)="wizard.languages = $event.target['value']">
+              <ion-select-option [value]="item.id" *ngFor="let item of paramLanguages">{{item.actualLang}}</ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-item>
+            <ion-label color="primary" position="stacked">{{'SignUp-BankName' | translate}}</ion-label>
+            <ion-input type="text" autocomplete="off" [value]="wizard.bankName" (input)="wizard.bankName = $event.target['value']"
+              placeholder="{{'SignUp-BankHint' | translate}}"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label color="primary" position="stacked">{{'SignUp-AccountNumber' | translate}}</ion-label>
+            <ion-input type="text" autocomplete="off" [value]="wizard.bankAccount" (input)="wizard.bankAccount = $event.target['value']"
+              placeholder="{{'SignUp-BankHint' | translate}}"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label color="primary" position="stacked">{{'SignUp-RoutingNumber' | translate}}</ion-label>
+            <ion-input type="text" autocomplete="off" [value]="wizard.routingNumber" (input)="wizard.routingNumber = $event.target['value']"
+              placeholder="{{'SignUp-BankHint' | translate}}"></ion-input>
+          </ion-item>
+        </ion-list>
+        <ion-grid>
+          <ion-row>
+            <ion-col size="6">
+              <ion-button class="ion-margin fullbutton" color="secondary" expand="block" (click)="backSlide()">
+                {{'Welcome-Back' | translate}}
+              </ion-button>
+            </ion-col>
+            <ion-col size="6">
+              <ion-button class="ion-margin" expand="block" type="submit">
+                {{'Welcome-Next' | translate}}
+              </ion-button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+        <ion-item>
+        </ion-item>
+      </form>
+    </div>
+
+    <!-- ADDRESS SWIPE -->
+    <div *ngIf="currentStep==STEP_ADDRESS">
+      <ion-toolbar class="ion-no-border smalltoolbar">
+        <ion-title class="nopaddingtitle">
+          {{'SignUp-AddressTitle' | translate}}
+        </ion-title>
+      </ion-toolbar>
+      <form class="form-default fixed-swiper" (submit)="saveAddress()">
+        <ion-list>
+          <ion-item>
+            <ion-label color="primary" position="stacked">{{'SignUp-AddressStreet' | translate}}</ion-label>
+            <ion-input type="text" autocomplete="off" [value]="wizard.street" (input)="wizard.street = $event.target['value']"
+              placeholder="{{'SignUp-AddressStreetHint' | translate}}"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label color="primary" position="stacked">{{'SignUp-AddressCity' | translate}}</ion-label>
+            <ion-input type="text" autocomplete="off" [value]="wizard.city" (input)="wizard.city = $event.target['value']"
+              placeholder="{{'SignUp-AddressCityHint' | translate}}"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label color="primary" position="stacked">{{'SignUp-AddressState' | translate}}</ion-label>
+            <ion-input type="text" autocomplete="off" [value]="wizard.state" (input)="wizard.state = $event.target['value']"
+              placeholder="{{'SignUp-AddressStateHint' | translate}}"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label color="primary" position="stacked">{{'SignUp-AddressZipCode' | translate}}</ion-label>
+            <ion-input type="number" autocomplete="off" [value]="wizard.zipCode" (input)="wizard.zipCode = $event.target['value']"
+              placeholder="{{'SignUp-AddressZipCodeHint' | translate}}"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label color="primary" position="stacked">{{'StaffProfile-Places' | translate}}</ion-label>
+            <ion-select multiple="true"  placeholder="{{'StaffProfile-PlacesHint' | translate}}" [value]="wizard.places" (ionChange)="wizard.places = $event.target['value']">
+              <ion-select-option [value]="item.id" *ngFor="let item of paramStates">{{item.actualLang}}</ion-select-option>
+            </ion-select>
+          </ion-item>
+        </ion-list>
+        <ion-grid>
+          <ion-row>
+            <ion-col size="6">
+              <ion-button class="ion-margin fullbutton" color="secondary" expand="block" (click)="backSlide()">
+                {{'Welcome-Back' | translate}}
+              </ion-button>
+            </ion-col>
+            <ion-col size="6">
+              <ion-button class="ion-margin" expand="block" type="submit">
+                {{'Welcome-Next' | translate}}
+              </ion-button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+        <ion-item>
+        </ion-item>
+      </form>
+    </div>
+
+    <!-- LEGAL SWIPE -->
+    <div *ngIf="currentStep==STEP_LEGAL">
+      <ion-toolbar class="ion-no-border smalltoolbar">
+        <ion-title class="nopaddingtitle">
+          {{'SignUp-LegalTitle' | translate}}
+        </ion-title>
+      </ion-toolbar>
+      <form class="form-default fixed-swiper" (submit)="saveLegal()">
+        <ion-list>
+          <ion-item>
+            <ion-label color="primary">{{'SignUp-USCitizen' | translate}}</ion-label>
+            <ion-select  placeholder="{{'SignUp-USCitizenHint' | translate}}" [value]="wizard.usCitizenStr" (ionChange)="wizard.usCitizenStr = $event.target['value']">
+              <ion-select-option value="1">{{'SignUp-USCitizenY' | translate}}</ion-select-option>
+              <ion-select-option value="0">{{'SignUp-USCitizenN' | translate}}</ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-item *ngIf="wizard.usCitizenStr=='0'">
+            <ion-label color="primary" text-wrap>{{'SignUp-NoUSCitizen' | translate}}</ion-label>
+            <ion-select  placeholder="{{'SignUp-NoUSCitizenHint' | translate}}" [value]="wizard.noUSWorkPermissionStr" (ionChange)="wizard.noUSWorkPermissionStr = $event.target['value']">
+              <ion-select-option value="1">{{'SignUp-NoUSCitizenY' | translate}}</ion-select-option>
+              <ion-select-option value="0">{{'SignUp-NoUSCitizenN' | translate}}</ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-item>
+            <ion-label color="primary" text-wrap>{{'SignUp-Convicted' | translate}}</ion-label>
+            <ion-select  placeholder="{{'SignUp-ConvictedHint' | translate}}" [value]="wizard.convictedStr" (ionChange)="wizard.convictedStr = $event.target['value']">
+              <ion-select-option value="1">{{'SignUp-ConvictedY' | translate}}</ion-select-option>
+              <ion-select-option value="0">{{'SignUp-ConvictedN' | translate}}</ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-item *ngIf="wizard.convictedStr=='1'">
+            <ion-input type="text" autocomplete="off" [value]="wizard.convictedExplain" (input)="wizard.convictedExplain = $event.target['value']"
+              placeholder="{{'SignUp-ConvictedExplain' | translate}}"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label color="primary" text-wrap>{{'SignUp-Driver' | translate}}</ion-label>
+            <ion-select  placeholder="{{'SignUp-DriverHint' | translate}}" [value]="wizard.hasDriverLicenseStr" (ionChange)="wizard.hasDriverLicenseStr = $event.target['value']">
+              <ion-select-option value="1">{{'SignUp-DriverY' | translate}}</ion-select-option>
+              <ion-select-option value="0">{{'SignUp-DriverN' | translate}}</ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-item *ngIf="wizard.hasDriverLicenseStr=='1'">
+            <ion-input type="text" autocomplete="off" [value]="wizard.driverLicenseNumber" (input)="wizard.driverLicenseNumber = $event.target['value']"
+              placeholder="{{'SignUp-DriverLicense' | translate}}"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label color="primary" text-wrap>{{'SignUp-Skills' | translate}}</ion-label>
+            <ion-select multiple="true"  placeholder="{{'SignUp-SkillsHint' | translate}}" [value]="wizard.skills" (ionChange)="wizard.skills = $event.target['value']">
+              <ion-select-option [value]="item.id" *ngFor="let item of paramSkills">{{item.actualLang}}</ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-item>
+            <ion-label color="primary" text-wrap position="stacked">{{'SignUp-EmergName' | translate}}</ion-label>
+            <ion-input type="text" autocomplete="off" [value]="wizard.emergencyName" (input)="wizard.emergencyName = $event.target['value']"
+              placeholder="{{'SignUp-EmergNameHint' | translate}}"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label color="primary" position="stacked">{{'SignUp-EmergPhone' | translate}}</ion-label>
+            <ion-input type="phone" autocomplete="off" [value]="wizard.emergencyNumber" (input)="wizard.emergencyNumber = $event.target['value']"
+              placeholder="{{'SignUp-EmergPhoneHint' | translate}}"></ion-input>
+          </ion-item>
+        </ion-list>
+        <ion-grid>
+          <ion-row>
+            <ion-col size="6">
+              <ion-button class="ion-margin fullbutton" color="secondary" expand="block" (click)="backSlide()">
+                {{'Welcome-Back' | translate}}
+              </ion-button>
+            </ion-col>
+            <ion-col size="6">
+              <ion-button class="ion-margin" expand="block" type="submit">
+                {{'Welcome-Next' | translate}}
+              </ion-button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+        <ion-item>
+        </ion-item>
+      </form>
+    </div>
+
+    <!-- DOCUMENTS SWIPE -->
+    <div *ngIf="currentStep==STEP_DOCUMENTS">
+      <ion-toolbar class="ion-no-border smalltoolbar">
+        <ion-title class="nopaddingtitle">
+          {{'SignUp-DocsTitle' | translate}}
+        </ion-title>
+      </ion-toolbar>
+      <p class="docs-hint-description" *ngIf="wizard.step != FILE_GREENC">
+        {{'StaffSkills-UploadFilesHint' | translate}}
+      </p>
+      <form class="form-default fixed-swiper">
+        <ion-list>
+
+          <!-- SOCIAL SECURITY OR ITIN # UPLOAD (FRONT) -->
+          <ion-item *ngIf="wizard.step == 'legal'">
+            <div class="centereditem">
+            <ion-row>
+              <h1 class="centered">{{'StaffProfile-SocialSec' | translate}}</h1>
+            </ion-row>
+            <ion-row>
+              <div *ngIf="!wizard.documentsocial">
+                <img src="assets/samplesocialsec.png">
+              </div>
+            </ion-row>
+            <ion-row>
+              <ion-button class="ion-margin fullbutton2" expand="block" for="image-upload" [disabled]="isFileUploading">
+                <ion-input type="file"
+                    (change)="uploadImage(FILE_SOCIAL, FILE_SOCIAL, $event.target['files'])">
+                </ion-input>
+              </ion-button>
+            </ion-row>
+            <ion-row *ngIf="skipdocuments">
+              <ion-button class="ion-margin fullbutton2" expand="outline" (click)="skipDocumentStep()">
+                Skip Uploading Files
+              </ion-button>
+            </ion-row>
+            <ion-row>
+              <div *ngIf="!loadingNextStep && wizard.documentsocial">
+                <img *ngIf="wizard.documentsocial" [src]="wizard.documentsocial" (click)="download(wizard.documentsocial)">
+                <ion-button class="ion-margin fullbutton2" expand="block"
+                  (click)="nextStepImage(FILE_SOCIAL)" [disabled]="isFileUploading">
+                  {{
+                    isFileUploading ?
+                      ('StaffProfile-UploadingFile' | translate) :
+                      ('StaffProfile-UploadFile' | translate)
+                  }}
+                </ion-button>
+              </div>
+            </ion-row>
+            </div>
+          </ion-item>
+
+          <!-- SOCIAL SECURITY UPLOAD (BACK) -->
+          <ion-item *ngIf="wizard.step == FILE_SOCIAL">
+            <div class="centereditem">
+            <ion-row>
+              <h1 class="centered">{{'StaffProfile-SocialSecBack' | translate}}</h1>
+            </ion-row>
+            <ion-row>
+              <div *ngIf="!wizard.documentsocialBack">
+                <img src="assets/samplesocialsec.png">
+              </div>
+            </ion-row>
+            <ion-row>
+              <ion-button class="ion-margin fullbutton2" expand="block" for="image-upload" [disabled]="isFileUploading">
+                <ion-input type="file"
+                    (change)="uploadImage(FILE_SOCIAL, FILE_SOCIAL_BACK, $event.target['files'])">
+                </ion-input>
+              </ion-button>
+            </ion-row>
+            <ion-row *ngIf="skipdocuments">
+              <ion-button class="ion-margin fullbutton2" expand="outline" (click)="skipDocumentStep()">
+                Skip Uploading Files
+              </ion-button>
+            </ion-row>
+            <ion-row>
+              <div *ngIf="!loadingNextStep && wizard.documentsocialBack">
+                <img *ngIf="wizard.documentsocialBack" [src]="wizard.documentsocialBack" (click)="download(wizard.documentsocialBack)">
+                <ion-button class="ion-margin fullbutton2" expand="block"
+                  (click)="nextStepImage(FILE_SOCIAL_BACK)" [disabled]="isFileUploading">
+                  {{
+                    isFileUploading ?
+                      ('StaffProfile-UploadingFile' | translate) :
+                      ('StaffProfile-UploadFile' | translate)
+                  }}
+                </ion-button>
+              </div>
+            </ion-row>
+            </div>
+          </ion-item>
+
+          <!-- SOCIAL SECURITY UPLOAD (FRONT) -->
+          <ion-item *ngIf="wizard.step == FILE_SOCIAL_BACK">
+            <div class="centereditem">
+            <ion-row>
+              <h1 class="centered">{{'StaffProfile-GreenCard' | translate}}</h1>
+            </ion-row>
+            <ion-row>
+              <div *ngIf="!wizard.documentgreen">
+                <img src="assets/samplegreencard.png">
+              </div>
+            </ion-row>
+            <ion-row>
+              <ion-button class="ion-margin fullbutton2" expand="block" for="image-upload" [disabled]="isFileUploading">
+                <ion-input type="file"
+                    (change)="uploadImage(FILE_GREENC, FILE_GREENC, $event.target['files'])">
+                </ion-input>
+              </ion-button>
+            </ion-row>
+            <ion-row *ngIf="skipdocuments">
+              <ion-button class="ion-margin fullbutton2" expand="outline" (click)="skipDocumentStep()">
+                Skip Uploading Files
+              </ion-button>
+            </ion-row>
+            <ion-row>
+              <div *ngIf="!loadingNextStep && wizard.documentgreen">
+                <img *ngIf="wizard.documentgreen" [src]="wizard.documentgreen" (click)="download(wizard.documentgreen)">
+                <ion-button class="ion-margin fullbutton2" expand="block"
+                  (click)="nextStepImage(FILE_GREENC)" [disabled]="isFileUploading">
+                  {{
+                    isFileUploading ?
+                      ('StaffProfile-UploadingFile' | translate) :
+                      ('StaffProfile-UploadFile' | translate)
+                  }}
+                </ion-button>
+              </div>
+            </ion-row>
+            </div>
+          </ion-item>
+
+          <!-- DNI UPLOAD (FRONT) -->
+          <ion-item *ngIf="wizard.step == FILE_GREENC">
+            <div class="centereditem">
+            <ion-row>
+              <h1 class="centered">{{'StaffProfile-Dni' | translate}}</h1>
+            </ion-row>
+            <ion-row>
+              <div *ngIf="!wizard.documentdni">
+                <img src="assets/sampledni.png">
+              </div>
+            </ion-row>
+            <ion-row>
+              <ion-button class="ion-margin fullbutton2" expand="block" for="image-upload" [disabled]="isFileUploading">
+                <ion-input type="file"
+                    (change)="uploadImage(FILE_DNI, FILE_DNI, $event.target['files'])">
+                </ion-input>
+              </ion-button>
+            </ion-row>
+            <ion-row *ngIf="skipdocuments">
+              <ion-button class="ion-margin fullbutton2" expand="outline" (click)="skipDocumentStep()">
+                Skip Uploading Files
+              </ion-button>
+            </ion-row>
+            <ion-row>
+              <div *ngIf="!loadingNextStep && wizard.documentdni">
+                <img *ngIf="wizard.documentdni" [src]="wizard.documentdni" (click)="download(wizard.documentdni)">
+                <ion-button class="ion-margin fullbutton2" expand="block"
+                  (click)="nextStepImage(FILE_DNI)" [disabled]="isFileUploading">
+                  {{
+                    isFileUploading ?
+                      ('StaffProfile-UploadingFile' | translate) :
+                      ('StaffProfile-UploadFile' | translate)
+                  }}
+                </ion-button>
+              </div>
+            </ion-row>
+            </div>
+          </ion-item>
+
+          <!-- FORM POLICIES -->
+          <ion-item *ngIf="wizard.step == FILE_DNI">
+            <div class="centereditem">
+            <ion-row>
+              <h1 class="centered">{{'StaffProfile-policies' | translate}}</h1>
+            </ion-row>
+            <ion-row>
+              <div *ngIf="!wizard.documentpolicies">
+                <img src="assets/samplepolicies.png">
+                <ion-button class="ion-margin fullbutton2" expand="block" (click)="download('http://www.bolivianwebsite.com/cdn/php/rhpolicies.pdf')">
+                  {{'StaffProfile-DownloadPolicies' | translate}}
+                </ion-button>
+              </div>
+            </ion-row>
+            <ion-row>
+              <ion-button class="ion-margin fullbutton2" expand="block" for="image-upload" [disabled]="isFileUploading">
+                <ion-input type="file"
+                    (change)="uploadImage(FILE_POLICIES, FILE_POLICIES, $event.target['files'])">
+                </ion-input>
+              </ion-button>
+            </ion-row>
+            <ion-row *ngIf="skipdocuments">
+              <ion-button class="ion-margin fullbutton2" expand="outline" (click)="skipDocumentStep()">
+                Skip Uploading Files
+              </ion-button>
+            </ion-row>
+            <ion-row>
+              <div *ngIf="!loadingNextStep && wizard.documentpolicies">
+                <img *ngIf="wizard.documentpolicies" [src]="wizard.documentpolicies" (click)="download(wizard.documentpolicies)">
+                <ion-button class="ion-margin fullbutton2" expand="block"
+                  (click)="nextStepImage(FILE_POLICIES)" [disabled]="isFileUploading">
+                  {{
+                    isFileUploading ?
+                      (
+                        ('StaffProfile-UploadingFile' | translate) +
+                        (actualProgress!='' ? ' (' + actualProgress + ')' : '')
+                      ) :
+                      ('StaffProfile-UploadFile' | translate)
+                  }}
+                </ion-button>
+              </div>
+            </ion-row>
+            </div>
+          </ion-item>
+
+          <!-- FORM I9 UPLOAD (FRONT) -->
+          <ion-item *ngIf="wizard.step == FILE_POLICIES">
+            <div class="centereditem">
+            <ion-row>
+              <h1 class="centered">{{'StaffProfile-i9Form' | translate}}</h1>
+            </ion-row>
+            <ion-row>
+              <div *ngIf="!wizard.documentformi9">
+                <img src="assets/sampleformi9.png">
+                <ion-button class="ion-margin fullbutton2" expand="block" (click)="download('http://www.bolivianwebsite.com/cdn/php/formi9.pdf')">
+                  {{'StaffProfile-DownloadFormi9' | translate}}
+                </ion-button>
+              </div>
+            </ion-row>
+            <ion-row>
+              <ion-button class="ion-margin fullbutton2" expand="block" for="image-upload" [disabled]="isFileUploading">
+                <ion-input type="file"
+                    (change)="uploadImage(FILE_ININE, FILE_ININE, $event.target['files'])">
+                </ion-input>
+              </ion-button>
+            </ion-row>
+            <ion-row *ngIf="skipdocuments">
+              <ion-button class="ion-margin fullbutton2" expand="outline" (click)="skipDocumentStep()">
+                Skip Uploading Files
+              </ion-button>
+            </ion-row>
+            <ion-row>
+              <div *ngIf="!loadingNextStep && wizard.documentformi9">
+                <img *ngIf="wizard.documentformi9" [src]="wizard.documentformi9" (click)="download(wizard.documentformi9)">
+                <ion-button class="ion-margin fullbutton2" expand="block"
+                  (click)="nextStepImage(FILE_ININE)" [disabled]="isFileUploading">
+                  {{
+                    isFileUploading ?
+                      (
+                        ('StaffProfile-UploadingFile' | translate) +
+                        (actualProgress!='' ? ' (' + actualProgress + ')' : '')
+                      ) :
+                      ('StaffProfile-UploadFile' | translate)
+                  }}
+                </ion-button>
+              </div>
+            </ion-row>
+            </div>
+          </ion-item>
+
+          <!-- PROFILE PICTURE UPLOAD -->
+          <ion-item *ngIf="wizard.step == FILE_ININE">
+            <div class="centereditem">
+            <ion-row>
+              <h1 class="centered">{{'StaffProfile-PorfilePic' | translate}}</h1>
+            </ion-row>
+            <ion-row>
+              <div *ngIf="!wizard.profilepic">
+                <img src="assets/pic.png">
+              </div>
+            </ion-row>
+            <ion-row>
+              <ion-button class="ion-margin fullbutton2" expand="block" for="image-upload" [disabled]="isFileUploading">
+                <ion-input type="file"
+                    (change)="uploadImage(FILE_PROFILEPIC, FILE_PROFILEPIC, $event.target['files'])">
+                </ion-input>
+              </ion-button>
+            </ion-row>
+            <ion-row>
+              <div *ngIf="!loadingNextStep && wizard.profilepic">
+                <img *ngIf="wizard.profilepic" [src]="wizard.profilepic" (click)="download(wizard.profilepic)">
+                <ion-button class="ion-margin fullbutton2" expand="block"
+                  (click)="nextStepImage(FILE_PROFILEPIC)" [disabled]="isFileUploading">
+                  {{
+                    isFileUploading ?
+                      ('StaffProfile-UploadingFile' | translate) :
+                      ('StaffProfile-UploadFile' | translate)
+                  }}
+                </ion-button>
+              </div>
+            </ion-row>
+            </div>
+          </ion-item>
+
+          <ion-item></ion-item>
+          <ion-item *ngIf="wizard.step == FILE_PROFILEPIC">
+            <ion-label color="danger" text-wrap><font class="custom-alert-text">{{'SignUp-Agreement' | translate}}</font></ion-label>
+            <ion-checkbox checked="false" color="danger" (ionChange)="acceptConditions()"></ion-checkbox>
+          </ion-item>
+        </ion-list>
+
+        <ion-grid *ngIf="wizard.step == FILE_PROFILEPIC">
+          <ion-row>
+            <ion-col size="6">
+              <ion-button class="ion-margin fullbutton" color="secondary" expand="block" (click)="backSlide()">
+                {{'Welcome-Back' | translate}}
+              </ion-button>
+            </ion-col>
+            <ion-col size="6">
+              <ion-button class="ion-margin fullbutton" expand="block" (click)="saveDocs()" [disabled]="!acceptedConditions">
+                {{'Welcome-GetStarted' | translate}}
+              </ion-button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+
+        <ion-item>
+        </ion-item>
+      </form>
+    </div>
+
+  </div>
+</ion-content>

@@ -1,0 +1,118 @@
+<ion-header collapse="fade" [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      Staff
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <div class="ion-padding backgroundimage">
+    <!-- Skeletons -->
+    <ng-container *ngIf="!content_loaded">
+
+      <ion-list-header class="ion-list-header-small">
+        <ion-label><ion-skeleton-text animated style="width: 50%"></ion-skeleton-text></ion-label>
+        <ion-note color="tertiary" class="ion-note-small">
+          <ion-skeleton-text animated style="width: 40px"></ion-skeleton-text>
+        </ion-note>
+      </ion-list-header>
+      <ion-list class="list-custom animate__animated animate__fadeIn" lines="full">
+        <ion-item button detail="false" *ngFor="let i of [].constructor(12);">
+          <ion-avatar slot="start" class="ion-avatar-default-icon">
+            <ion-skeleton-text animated></ion-skeleton-text>
+          </ion-avatar>
+          <ion-label>
+            <h3><ion-skeleton-text animated style="width: 50%"></ion-skeleton-text></h3>
+            <p><ion-skeleton-text animated style="width: 75%"></ion-skeleton-text></p>
+          </ion-label>
+          <ion-skeleton-text slot="end" animated style="width: 15%"></ion-skeleton-text>
+        </ion-item>
+      </ion-list>
+
+    </ng-container>
+
+    <ng-container *ngIf="content_loaded">
+
+      <!-- REGISTERED LIST -->
+      <div *ngIf="registeredStaff.length > 0">
+        <ion-list-header class="ion-list-header-small">
+          <ion-label>REGISTERED APPLICATIONS ({{ registeredStaff.length }})</ion-label>
+        </ion-list-header>
+        <ion-list class="list-custom animate__animated animate__fadeIn">
+          <div *ngFor="let item of registeredStaff">
+          <ion-item button detail="false" [routerLink]="'/staff/' + item.id" class="no-border">
+            <ion-avatar slot="start" class="ion-avatar-default-icon">
+              <i class="icon ion-md-person" color="primary"></i>
+            </ion-avatar>
+            <ion-label>
+              <h3>{{ item.firstName + ' ' + item.lastName }}</h3>
+              <font [color]="item.usCitizen || item.noUSWorkPermission ? 'green' : 'red'">{{ item.usCitizen ? 'US Citizen' : (item.noUSWorkPermission ? 'Working Permission' : 'NO WORKING PERMISSION') }}</font>
+            </ion-label>
+            <ion-badge color="primary" mode="ios" slot="end">
+              {{ item.status | titlecase }}
+            </ion-badge>
+          </ion-item>
+          <ion-row class="my-badges-button">
+            <ion-button expand="outline" color="success" class="smallest-font" (click)="registered(true, item)">
+              <font>Accept</font>
+            </ion-button>
+            <ion-button expand="outline" color="danger" class="smallest-font" (click)="registered(false, item)">
+              <font>Deny</font>
+            </ion-button>
+          </ion-row>
+          </div>
+        </ion-list>
+      </div>
+
+      <!-- ENABLED LIST -->
+      <div *ngIf="enabledStaff.length > 0">
+        <ion-list-header class="ion-list-header-small">
+          <ion-label>ENABLED STAFF ({{ enabledStaff.length }})</ion-label>
+        </ion-list-header>
+        <ion-list class="list-custom animate__animated animate__fadeIn">
+          <div *ngFor="let item of enabledStaff">
+          <ion-item button detail="false" [routerLink]="'/staff/' + item.id" class="no-border">
+            <ion-avatar slot="start" class="ion-avatar-default-icon">
+              <i class="icon ion-md-person" color="primary"></i>
+            </ion-avatar>
+            <ion-label>
+              <h3>{{ item.firstName + ' ' + item.lastName }}</h3>
+              <font [color]="item.usCitizen || item.noUSWorkPermission ? 'green' : 'red'">{{ item.usCitizen ? 'US Citizen' : (item.noUSWorkPermission ? 'Working Permission' : 'NO WORKING PERMISSION') }}</font>
+            </ion-label>
+            <ion-badge color="primary" mode="ios" slot="end">
+              {{ item.status | titlecase }}
+            </ion-badge>
+          </ion-item>
+          </div>
+        </ion-list>
+      </div>
+
+      <!-- DISABLED LIST -->
+      <div *ngIf="disabledStaff.length > 0">
+        <ion-list-header class="ion-list-header-small">
+          <ion-label>DISABLED STAFF ({{ disabledStaff.length }})</ion-label>
+        </ion-list-header>
+        <ion-list class="list-custom animate__animated animate__fadeIn">
+          <div *ngFor="let item of disabledStaff">
+            <ion-item button detail="false" [routerLink]="'/staff/' + item.id" class="no-border">
+              <ion-avatar slot="start" class="ion-avatar-default-icon">
+                <i class="icon ion-md-person" color="primary"></i>
+              </ion-avatar>
+              <ion-label>
+                <h3>{{ item.firstName + ' ' + item.lastName }}</h3>
+                <font [color]="item.usCitizen || item.noUSWorkPermission ? 'green' : 'red'">{{ item.usCitizen ? 'US Citizen' : (item.noUSWorkPermission ? 'Working Permission' : 'NO WORKING PERMISSION') }}</font>
+              </ion-label>
+              <ion-badge color="danger" mode="ios" slot="end">
+                {{ item.status | titlecase }}
+              </ion-badge>
+            </ion-item>
+          </div>
+        </ion-list>
+      </div>
+
+    </ng-container>
+  </div>
+
+</ion-content>

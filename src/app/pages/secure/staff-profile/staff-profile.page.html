@@ -1,0 +1,115 @@
+<ion-header padding>
+  <ion-toolbar>
+    <ion-title size="large" class="custom-tab-title">
+      <!-- <ion-icon name="chevron-forward-outline" color="primary"></ion-icon> -->
+      <i color="primary" class="icon ion-md-person"></i>
+      {{'StaffProfile-Header' | translate}}
+    </ion-title>
+
+    <ion-buttons slot="end">
+      <ion-button [disabled]="lang=='en'" color="primary" (click)="changeLang('en')">
+        <img class="custom-lang-flag" src="assets/lang-en.png">
+      </ion-button>
+      <!-- <ion-icon slot="icon-only" color="tertiary" name="code-outline"></ion-icon> -->
+      <i slot="icon-only" color="tertiary" class="icon ion-md-code"></i>
+      <ion-button [disabled]="lang=='es'" color="primary" (click)="changeLang('es')">
+        <img class="custom-lang-flag" src="assets/lang-es.png">
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content *ngIf="staff">
+  <div class="backgroundimage">
+
+  <div class="hero hero-light-gradient">
+    <ion-avatar class="profile-pic-avatar">
+      <i *ngIf="!profilePicture || !profilePicture.fileUrl" color="tertiary" class="icon ion-md-person bigger-icon"></i>
+      <img *ngIf="profilePicture && profilePicture.fileUrl" [src]="profilePicture.fileUrl">
+    </ion-avatar>
+    <ion-button class="ion-button-small" color="primary" fill="clear" disabled="true" *ngIf="staff">
+      {{ staff.lastName + ' ' + staff.firstName }}
+    </ion-button>
+  </div>
+
+  <ion-list-header class="ion-list-header-small marginleft" *ngIf="staff">
+    <ion-label>Personal Information</ion-label>
+  </ion-list-header>
+
+  <ion-list class="list-custom" lines="full" *ngIf="staff">
+    <ion-item>
+      <ion-label>
+        <p>Age</p>
+      </ion-label>
+      <ion-input readonly slot="end" class="font-size-small ion-text-right ion-no-padding-end"
+        value="{{ getAge() }} ({{longToDate(staff.birthday) | date:'MMM d, y'}})"></ion-input>
+    </ion-item>
+    <ion-item *ngIf="maritalStatus">
+      <ion-label>
+        <p>Status</p>
+      </ion-label>
+      <ion-input readonly slot="end" class="font-size-small ion-text-right ion-no-padding-end"
+        value="{{ maritalStatus.rhParameter.valueEn }}"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label>
+        <p>Phone</p>
+      </ion-label>
+      <ion-badge color="success" mode="ios" slot="end">
+        <a [href]="'tel:' + staff.phoneNumber" target="_blank">{{ staff.phoneNumber }}</a>
+      </ion-badge>
+    </ion-item>
+    <ion-item>
+      <ion-label>
+        <p>Email</p>
+      </ion-label>
+      <ion-badge color="success" mode="ios" slot="end">
+        <a [href]="'mailto:' + staff.email" target="_blank">{{ staff.email }}</a>
+      </ion-badge>
+    </ion-item>
+    <ion-item *ngIf="skills">
+      <ion-label>
+        <p>Positions</p>
+      </ion-label>
+      <ion-input readonly slot="end" class="font-size-small ion-text-right ion-no-padding-end"
+        [value]="getSkills()"></ion-input>
+    </ion-item>
+    <ion-item *ngIf="languages">
+      <ion-label>
+        <p>Languages</p>
+      </ion-label>
+      <ion-input readonly slot="end" class="font-size-small ion-text-right ion-no-padding-end"
+        [value]="getLanguages()"></ion-input>
+    </ion-item>
+    <ion-item *ngIf="workPlaces">
+      <ion-label>
+        <p>States to work</p>
+      </ion-label>
+      <ion-input readonly slot="end" class="font-size-small ion-text-right ion-no-padding-end"
+        [value]="getPlaces()"></ion-input>
+    </ion-item>
+  </ion-list>
+
+  <ion-list-header class="ion-list-header-small marginleft" *ngIf="legalDocs && legalDocs.length > 0">
+    <ion-label>Documents Attached</ion-label>
+  </ion-list-header>
+
+  <ion-list class="list-custom" lines="full" *ngIf="legalDocs && legalDocs.length > 0">
+    <ion-item *ngFor="let item of legalDocs">
+      <div class="widthrow">
+        <ion-row class="fullwidth">
+          <ion-label>
+            <p>{{ parseDocName(item.rhParameter.valueEn)}} </p>
+          </ion-label>
+        </ion-row>
+        <ion-row class="fullwidth" *ngIf="item.fileUrl">
+          <a [href]="item.fileUrl" target="_blank">
+          <img *ngIf="item.fileUrl" [src]="item.fileUrl" class="imagesize">
+          </a>
+        </ion-row>
+      </div>
+    </ion-item>
+  </ion-list>
+  </div>
+
+</ion-content>
