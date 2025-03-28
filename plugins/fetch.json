@@ -1,12 +1,4 @@
 {
-  "cordova-plugin-device": {
-    "source": {
-      "type": "registry",
-      "id": "cordova-plugin-device@^2.0.2"
-    },
-    "is_top_level": true,
-    "variables": {}
-  },
   "cordova-plugin-whitelist": {
     "source": {
       "type": "registry",
@@ -88,5 +80,13 @@
       "ANDROID_FIREBASE_PERF_GRADLE_PLUGIN_VERSION": "1.4.1",
       "ANDROID_GRPC_OKHTTP": "1.46.0"
     }
+  },
+  "cordova-plugin-device": {
+    "source": {
+      "type": "registry",
+      "id": "cordova-plugin-device@latest"
+    },
+    "is_top_level": true,
+    "variables": {}
   }
 }
